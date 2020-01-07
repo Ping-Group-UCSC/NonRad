@@ -1,0 +1,12 @@
+bulkband_index: [143,143]
+defectband_index: 142
+defectband_spin: "up"
+folder_final_state: ..\lin-gs
+folder_init_state: ..\lin-cdftup1
+ratio_final: 0.0
+ratio_init: 1.0
+title: Nonradiative
+dE: 0.69599746
+dimension: xy
+temperature: [10,50,100,300,600]
+g: 1
