@@ -1,0 +1,5 @@
+Upload complete example for NBVN
+Include instructions on example
+Edit code to include alternative transitions (i.e. SOC which is <phi_j|phi_k> and no Wif)
+Update documentation
+Edit code to not make plotting an option (and by default turn it off)
