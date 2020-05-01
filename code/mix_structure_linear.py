@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+#Mix two structures from CONTCAR
 import os
 import numpy as np
 from string import digits, ascii_letters
@@ -7,7 +7,7 @@ import re
 import sys
 import shutil
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'code'))
+sys.path.insert(0, "/export/data/share/wufeng/programs/cellkit")
 
 from io_package import read_cell_and_pos_auto, write_cell_and_pos_auto
 

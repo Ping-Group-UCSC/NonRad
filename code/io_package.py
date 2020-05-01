@@ -79,7 +79,7 @@ def read_cell_and_pos_qe(prefix):
             vecR = np.asarray([[float(x) for x in line.split()] for line in lines[i+1:i+4]]).T
         elif ("ATOMIC_POSITIONS" in line):
             unit_coord = line.split()[-1].replace("{", "").replace("}", "").replace("(", "").replace(")", "")
-            if ("crystal" not in line) or ("angstrom" not in line):
+            if ("crystal" not in line) and ("angstrom" not in line):
                 raise ValueError("Only crystal and angstrom coordinate are supported in QE input")
             elif ("angstrom" in line):
                 lconv = True
