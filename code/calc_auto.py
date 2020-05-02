@@ -234,14 +234,17 @@ def main():
             dinput["temperature"],
         )
 
+        print("phonon part done ... saving to phonon_part.txt")
         savedata_single_array(
             "phonon_part.txt", data, "filename_phonon_part", list_phonon_part
         )
     else:
+        print("phonon part read from phonon_part.txt")
         list_phonon_part = np.loadtxt("phonon_part.txt")
 
     # Calculate the apporximate phonon part at T=0
     if "phonon_part_T0_HR" not in data:
+        print("Calculating the approximate phonon part at T=0")
         data["phonon_part_T0_HR"] = calc_phonon_part_T0_HR(
             dinput["dE"], data["dQ"], data["hbarFreqf"]
         )

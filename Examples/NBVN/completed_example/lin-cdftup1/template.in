@@ -1,0 +1,41 @@
+&control
+    calculation = 'scf'
+    wf_collect = .true.
+    prefix = 'BN'
+    outdir = '.'
+/
+
+&system
+    ibrav = 0
+    nat = 71
+    ntyp = 2
+    nspin = 2
+    ecutwfc = 55
+    starting_magnetization(1:2) = 0.5, 0.5
+    occupations = 'from_input'
+    nbnd = 151
+/
+
+&electrons
+    mixing_beta = 0.7
+    conv_thr = 1e-06
+    scf_must_converge = .false.
+    electron_maxstep = 60
+/
+
+&ions
+/
+
+ATOMIC_SPECIES
+    B  10.811  B_ONCV_PBE-1.0.upf
+    N  14.0067  N_ONCV_PBE-1.0.upf
+
+CELL_PARAMETERS angstrom
+        15.043730000       0.000000000       0.000000000
+        -7.521865000      13.028252348       0.000000000
+         0.000000000       0.000000000      20.000000000
+
+K_POINTS automatic
+    1  1  1    0  0  0
+
+ATOMIC_POSITIONS crystal
