@@ -14,6 +14,8 @@ This code calculates the non-raditive recombination capture coefficient and life
 Prerequisites:
 ------------------------------------
 * [Python](https://www.python.org/downloads)
+* PyYaml, numpy, scipy, mpmath
+ > pip install pyyaml numpy scipy mpmath
 
 Examples:
 ------------------------------------
