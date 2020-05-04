@@ -1,4 +1,4 @@
-Non-Radiative Code
+Non-Radiative Code (python2 version)
 ===================================
 
 Description
@@ -20,17 +20,10 @@ Prerequisites:
 Examples:
 ------------------------------------
 Try out the example calculations under the directory `./Examples/`
-*will add detail*
 
-Help:
-------------------------------------
-*will add detail*
-
-Flow of the NonRad Code:
-------------------------------------
-*will add detail*
 
 Author(s)
 ------------------------------------
 This code was written by Feng Wu
+Revised and released by Tyler J. Smart
 

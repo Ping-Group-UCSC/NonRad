@@ -7,11 +7,7 @@ from libreadqe import read_pos_and_etot_ratio, read_wave, get_ratio_folder, read
 import matplotlib.pyplot as plt
 from matplotlib import rc
 
-try:
-    # python2
-    import cPickle as pickle
-except ModuleNotFoundError:
-    import pickle
+import cPickle as pickle
 
 list_color = ["black", "red", "blue", "darkgreen", "orange", "magenta", "darkgoldenrod", "coral", "lightskyblue", "darkolivegreen", "wheat", "lightcoral", "blueviolet", "lightseagreen", "gold"]
 list_linestyle = ["-", "--", "--", "--", "--", "--", "--"]
