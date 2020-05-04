@@ -27,3 +27,32 @@ Author(s)
 This code was written by Feng Wu
 Revised and released by Tyler J. Smart
 
+
+Running the code on kairay
+------------------------------------
+1. Load numpy
+
+```bash
+module load numpy/1.11.1
+```
+
+2. Install pip
+
+```bash
+wget https://bootstrap.pypa.io/get-pip.py
+python get-pip.py --user
+```
+
+Note! This installs pip to your local directory `~/.local/bin`. If this is not in your environmental `$PATH` then you will need to add the line `export PATH=$PATH:~/.local/bin` to your `~/.bashrc`, followed by `source ~/.bashrc`.
+
+Check!! If the above is done correctly running `pip --version` should print something similiar to the below:
+ > kairay:[~]$ pip --version  
+ > pip 20.1 from /home/tjsmart/.local/lib/python2.7/site-packages/pip (python 2.7)
+
+3. Install needed packages (may take a second)
+
+```bash
+pip install pyyaml scipy mpmath matplotlib
+```
+
+Done! :) You should be good to go.
