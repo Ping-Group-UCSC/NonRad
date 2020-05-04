@@ -14,8 +14,8 @@ This code calculates the non-raditive recombination capture coefficient and life
 Prerequisites:
 ------------------------------------
 * [Python](https://www.python.org/downloads)
-* PyYaml, numpy, scipy, mpmath
- > pip install pyyaml numpy scipy mpmath pickle
+* [pyyaml](https://pypi.org/project/PyYAML/), [numpy](https://pypi.org/project/numpy/), [scipy](https://pypi.org/project/scipy/), [mpmath](https://pypi.org/project/mpmath/), [matplotlib](https://pypi.org/project/matplotlib/)
+ > pip install pyyaml numpy scipy mpmath matplotlib
 
 Examples:
 ------------------------------------
@@ -24,11 +24,11 @@ Try out the example calculations under the directory `./Examples/`
 
 Author(s)
 ------------------------------------
-This code was written by Feng Wu
+This code was written by Feng Wu  
 Revised and released by Tyler J. Smart
 
 
-Running the code on kairay
+Setup for running the code on kairay
 ------------------------------------
 1. Load numpy
 
