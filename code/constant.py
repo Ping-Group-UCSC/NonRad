@@ -22,5 +22,6 @@ hbar_Js = h_Js / 2 / pi
 Kelvin2au = 1/3.1577464e5
 second2au = 1/2.418884326505e-17
 
+THz2cmm1 = 33.35643
 THzOrd2meV = 4.13566903434377990
 THzAng2meV = 4.13566903434377990 / 2*pi

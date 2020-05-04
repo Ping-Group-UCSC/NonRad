@@ -6,7 +6,12 @@ import numpy as np
 from libreadqe import read_pos_and_etot_ratio, read_wave, get_ratio_folder, read_eig, get_save_folder
 import matplotlib.pyplot as plt
 from matplotlib import rc
-import cPickle as pickle
+
+try:
+    # python2
+    import cPickle as pickle
+except ModuleNotFoundError:
+    import pickle
 
 list_color = ["black", "red", "blue", "darkgreen", "orange", "magenta", "darkgoldenrod", "coral", "lightskyblue", "darkolivegreen", "wheat", "lightcoral", "blueviolet", "lightseagreen", "gold"]
 list_linestyle = ["-", "--", "--", "--", "--", "--", "--"]
@@ -102,6 +107,8 @@ def plot_cp_T(filename, list_T_cp):
 def plot_tot_Q(filename, list_data_i, list_data_f, dE_corrected, dQ):
     '''
     Plot total energy v.s. Q
+    
+    :return: the data plotted (energy shifted to correct position, minimum set to 0)
     '''
     e0 = min([x["etot"] for x in list_data_f])
     dE = min([x["etot"] for x in list_data_i]) - e0
@@ -114,6 +121,15 @@ def plot_tot_Q(filename, list_data_i, list_data_f, dE_corrected, dQ):
     ar_q_f = dQ * ar_ratio_f
     ar_ratio_i = np.array([x["ratio"] for x in list_data_i])
     ar_q_i = dQ * ar_ratio_i
+
+
+    ar_i = np.array([ar_q_i,
+                [x["etot"]-e0-(dE - dE_corrected) for x in list_data_i]
+                ]).T
+    ar_f = np.array([ar_q_f,
+                [x["etot"]-e0 for x in list_data_f]
+                ]).T
+
     qmax = max(max(ar_q_f), max(ar_q_i))
 
     xmin = -qmax
@@ -122,8 +138,12 @@ def plot_tot_Q(filename, list_data_i, list_data_f, dE_corrected, dQ):
     ymax = 2*dE_corrected
 
     fig, ax = plt.subplots(1, 1, figsize=(6, 4))
-    ax.plot(ar_q_i, [x["etot"]-e0-(dE - dE_corrected) for x in list_data_i], marker="o", linestyle="-", color="red", fillstyle = "none")
-    ax.plot(ar_q_f, [x["etot"]-e0 for x in list_data_f], marker="o", linestyle="-", color="blue", fillstyle = "none")
+
+    ax.plot(ar_i[:,0], ar_i[:,1], marker="o", linestyle="-", color="red", fillstyle = "none")
+    ax.plot(ar_f[:,0], ar_f[:,1], marker="o", linestyle="-", color="blue", fillstyle = "none")
+
+#   ax.plot(ar_q_i, [x["etot"]-e0-(dE - dE_corrected) for x in list_data_i], marker="o", linestyle="-", color="red", fillstyle = "none")
+#   ax.plot(ar_q_f, [x["etot"]-e0 for x in list_data_f], marker="o", linestyle="-", color="blue", fillstyle = "none")
     ax.set_xlabel(r"Q amu$^{1/2}$\AA")
     ax.set_ylabel("energy (eV)")
     ax.set_xlim(xmin, xmax)
@@ -133,4 +153,7 @@ def plot_tot_Q(filename, list_data_i, list_data_f, dE_corrected, dQ):
     ax.plot([xmin,xmax], [0,0], linestyle="--", color="black")
     ax.plot([xmin,xmax], [dE_corrected, dE_corrected], linestyle="--", color="black")
     fig.savefig(filename, dpi=150) 
+
+    return ar_i, ar_f
+
     

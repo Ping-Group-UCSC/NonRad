@@ -125,7 +125,8 @@ def f_Element_Symbol_to_Z(symbl):
   try: 
     z = elements.index(symbl.strip()) + 1
   except:
-    print ("WARNING in f_Element_Symbol_to_Z: %s is not an element symbol" %(symbl))
+    raise ValueError('in f_Element_Symbol_to_Z')
+    print("WARNING in f_Element_Symbol_to_Z: %s is not an element symbol" %(symbl))
     z = 0 
   return z
 

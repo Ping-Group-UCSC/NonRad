@@ -2,3 +2,6 @@
 __pycache__
 .vscode
 .ipynb_checkpoints
+*.save
+local*
+phonon/

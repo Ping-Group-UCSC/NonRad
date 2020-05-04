@@ -15,7 +15,7 @@ Prerequisites:
 ------------------------------------
 * [Python](https://www.python.org/downloads)
 * PyYaml, numpy, scipy, mpmath
- > pip install pyyaml numpy scipy mpmath
+ > pip install pyyaml numpy scipy mpmath pickle
 
 Examples:
 ------------------------------------
