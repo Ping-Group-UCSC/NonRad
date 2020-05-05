@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 from math import pi
 
+# indent for formatting
+indent = '    '
+
 # Constants
 Ry2eV = 13.6056917
 Ha2eV = Ry2eV * 2

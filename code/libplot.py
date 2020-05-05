@@ -106,7 +106,7 @@ def plot_cp_T(filename, list_T_cp):
     plt.savefig(filename, dpi=150)
 
 
-def plot_tot_Q(filename, list_data_i, list_data_f, dE_corrected, dQ):
+def plot_tot_Q(filename, list_data_i, list_data_f, dE_corrected, dQ, enable_plot):
     '''
     Plot total energy v.s. Q
 
@@ -129,29 +129,31 @@ def plot_tot_Q(filename, list_data_i, list_data_f, dE_corrected, dQ):
                      [x["etot"]-e0 for x in list_data_f]
                      ]).T
 
-    qmax = max(max(ar_q_f), max(ar_q_i))
+    if enable_plot:
+        qmax = max(max(ar_q_f), max(ar_q_i))
 
-    xmin = -qmax
-    xmax = 2*qmax
-    ymin = -dE_corrected/2
-    ymax = 2*dE_corrected
+        xmin = -qmax
+        xmax = 2*qmax
+        ymin = -dE_corrected/2
+        ymax = 2*dE_corrected
 
-    fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+        fig, ax = plt.subplots(1, 1, figsize=(6, 4))
 
-    ax.plot(ar_i[:, 0], ar_i[:, 1], marker="o", linestyle="-", color="red", fillstyle="none")
-    ax.plot(ar_f[:, 0], ar_f[:, 1], marker="o", linestyle="-", color="blue", fillstyle="none")
+        ax.plot(ar_i[:, 0], ar_i[:, 1], marker="o", linestyle="-", color="red", fillstyle="none")
+        ax.plot(ar_f[:, 0], ar_f[:, 1], marker="o", linestyle="-", color="blue", fillstyle="none")
 
-#   ax.plot(ar_q_i, [x["etot"]-e0-(dE - dE_corrected) for x in list_data_i],
-#               marker="o", linestyle="-", color="red", fillstyle = "none")
-#   ax.plot(ar_q_f, [x["etot"]-e0 for x in list_data_f], marker="o", linestyle="-", color="blue", fillstyle = "none")
-    ax.set_xlabel(r"Q amu$^{1/2}$\AA")
-    ax.set_ylabel("energy (eV)")
-    ax.set_xlim(xmin, xmax)
-    ax.set_ylim(ymin, ymax)
-    ax.plot([0, 0], [ymin, ymax], linestyle="--", color="black")
-    ax.plot([qmax, qmax], [ymin, ymax], linestyle="--", color="black")
-    ax.plot([xmin, xmax], [0, 0], linestyle="--", color="black")
-    ax.plot([xmin, xmax], [dE_corrected, dE_corrected], linestyle="--", color="black")
-    fig.savefig(filename, dpi=150)
+    #   ax.plot(ar_q_i, [x["etot"]-e0-(dE - dE_corrected) for x in list_data_i],
+    #               marker="o", linestyle="-", color="red", fillstyle = "none")
+    #   ax.plot(ar_q_f, [x["etot"]-e0 for x in list_data_f], marker="o", linestyle="-",
+    #               color="blue", fillstyle = "none")
+        ax.set_xlabel(r"Q amu$^{1/2}$\AA")
+        ax.set_ylabel("energy (eV)")
+        ax.set_xlim(xmin, xmax)
+        ax.set_ylim(ymin, ymax)
+        ax.plot([0, 0], [ymin, ymax], linestyle="--", color="black")
+        ax.plot([qmax, qmax], [ymin, ymax], linestyle="--", color="black")
+        ax.plot([xmin, xmax], [0, 0], linestyle="--", color="black")
+        ax.plot([xmin, xmax], [dE_corrected, dE_corrected], linestyle="--", color="black")
+        fig.savefig(filename, dpi=150)
 
     return ar_i, ar_f

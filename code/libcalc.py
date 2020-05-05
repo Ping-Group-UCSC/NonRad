@@ -11,6 +11,7 @@ import glob
 from chem_utils import f_Element_Symbol_to_Mass
 from libreadqe import read_pos_and_etot_ratio, read_wave, get_ratio_folder, read_eig, get_save_folder
 from libmath import overlap_x_quantum_harmonic_num, overlap_x_quantum_harmonic_ladder_hr
+from constant import indent
 
 
 def calc_dQ(vecR, list_pos1, list_pos2):
@@ -78,6 +79,10 @@ def calc_freq(folder, ratio_min, ratio_max, dQ):
     Fit the effective 1D frequency from scf total energy and Q
     Data are selected from ratio_min to ratio_max; it is assumed near a minimum
     '''
+    import warnings
+    # ignore warning by polyfit
+    warnings.filterwarnings("ignore", message="Polyfit may be poorly conditioned")
+
     tol = 1e-6
     list_data = []
     for filename in glob.glob("%s/ratio-*/scf.out" % folder):
@@ -115,7 +120,8 @@ def calc_freq(folder, ratio_min, ratio_max, dQ):
 
                 list_data.append({"ratio": ratio, "etot": etot})
 
-    print("Found: %i points in folder %s in range %.2f ~ %.2f" % (len(list_data), folder, ratio_min, ratio_max))
+    print("%sFound: %i points in folder %s in range %.2f ~ %.2f" %
+          (indent*2, len(list_data), folder, ratio_min, ratio_max))
 
     if (len(list_data) < 3):
         print("Not enough points for range %.4f ~ %.4f" % (ratio_min, ratio_max))
@@ -331,6 +337,7 @@ def calc_wif(dir_i, dir_f, ix_defect, ix_bandmin, ix_bandmax, dQ, de=None, spinn
     loop through bands and compute overlap
     '''
     dic_band_overlap = {}
+    print("%sGathering :  band ratio" % (indent*2))
     for iband in range(ix_bandmin, ix_bandmax+1):
         list_overlap = []
 #       print(spin, iband, ix_defect, ar_eig1_q0[0,spin-1,iband-1,0], + ar_eig1_q0[0, spin-1, ix_defect-1,0])
@@ -351,7 +358,8 @@ def calc_wif(dir_i, dir_f, ix_defect, ix_bandmin, ix_bandmax, dQ, de=None, spinn
             if (folder2 is None):
                 print("Skip ratio %.4f as missing .save folder %s" % (ratio, os.path.join(dir_f, "ratio-%.4f" % ratio)))
                 continue
-            print("Compute overlap for band %i ratio %.4f" % (iband, ratio))
+            print("%sOverlap: %i  %.4f" % (indent*3, iband, ratio))
+            # print("%sCompute overlap for band %i ratio %.4f" % (indent*2, iband, ratio))
 
 # Read wavefunction of a defect state of final state
             evc2 = read_wave(folder2, spin, 1, ix_defect)
@@ -371,7 +379,7 @@ def calc_wif(dir_i, dir_f, ix_defect, ix_bandmin, ix_bandmax, dQ, de=None, spinn
     list_wif = []
     for iband, ar0 in dic_band_overlap.items():
         # Only fit first several
-        print(ar0)
+        # print(ar0)
         ar_Q = ar0[:, 0] * dQ
         ar_overlap = ar0[:, 1]
         nq = 3
@@ -400,7 +408,7 @@ def calc_phonon_part_T0_HR(dE, dQ, freq):
     dE = dE / Ha2eV
     freqi = freqi / 1000 / Ha2eV
     freqf = freqf / 1000 / Ha2eV
-    print("atomic unit dQ : %24.14g" % dQ)
+    print("%satomic unit dQ : %24.14g" % (indent*2, dQ))
 
 # Set parameters
     sigma = 0.8 * freqf
@@ -416,6 +424,7 @@ def calc_phonon_part_T0_HR(dE, dQ, freq):
     mmax = int(m_center + sigmamax / freqf + 1)
 #           print("Maximum final state oscillator quantum number %4i %4i" % (mmin, mmax))
     s1 = 0
+    print("%s  n   m   deltacoef      overlap" % (indent*(3+3)))
     for m in range(mmax, mmin, -1):
         dEph = dE + n * freqi - m * freqf
         coef = exp(- dEph ** 2 / (2 * sigma ** 2)) / (sigma * sqrt(2 * pi))
@@ -426,10 +435,10 @@ def calc_phonon_part_T0_HR(dE, dQ, freq):
                                                        )
 
         s1 += overlap**2 * coef
-        print("Contribution: n m occupation deltacoef overlap %3i %3i %14.7g %14.7g" % (n, m, coef, overlap**2))
+        print("%sContribution: %3i %3i %14.7g %14.7g" % (indent*3, n, m, coef, overlap**2))
     s += s1
 
-    print(r"<\chi|Q-Q0|\chi> @ T = %d ~=  %24.14g" % (0, s))
+    print(r"%s<\chi|Q-Q0|\chi> @ T = %d ~=  %24.14g" % (indent*2, 0, s))
     return s
 
 
@@ -446,8 +455,8 @@ def calc_phonon_part(dE, dQ, freqi, freqf, list_T):
 #   M = M * AMU2me
 #   ar_delta /= Bohr2Ang
 #   ar_Qi = ar_Qi / Bohr2Ang * (AMU2me)**0.5
-    print("atomic unit dQ : %24.14g" % dQ)
-    print("atomic unit freqi/f: %24.14g %24.14g" % (freqi, freqf))
+    print("%satomic unit dQ : %24.14g" % (indent*2, dQ))
+    print("%satomic unit freqi/f: %24.14g %24.14g" % (indent*2, freqi, freqf))
 #   print("M freqi frqef : %24.14g %24.14g %24.14g" % (M, freqi, freqf))
 #   print("M*freq i/f : %24.14g %24.14g" % (M*freqi, M*freqf))
 
@@ -507,10 +516,11 @@ def calc_phonon_part(dE, dQ, freqi, freqf, list_T):
             if (n_b1 < tr):
                 nmax = i - 1
                 break
-        print("Temperature : %4i K ; Maximum initial state oscillator quantum number %4i" % (T, nmax))
+        print("\n%sTemperature : %4i K ; Maximum initial state oscillator quantum number %4i" % (indent*2, T, nmax))
 
 # Iterate
         s = 0
+        print("%s  n   m   occupation     deltacoef      overlap" % (indent*(3+3)))
         for n in range(nmax, -1, -1):
             n_b = exp(-n * freqi/kBT) * (1 - exp(-freqi / kBT))
             m_center = (dE + n * freqi) / freqf
@@ -524,11 +534,11 @@ def calc_phonon_part(dE, dQ, freqi, freqf, list_T):
                 overlap = get_overlap_x(n, m)
 
                 s1 += overlap**2 * coef
-                print("Contribution: n m occupation deltacoef overlap %3i %3i %14.7g %14.7g %14.7g" %
-                      (n, m, n_b, coef, overlap**2))
+                print("%sContribution: %3i %3i %14.7g %14.7g %14.7g" %
+                      (indent*3, n, m, n_b, coef, overlap**2))
             s += s1 * n_b
 
-        print(r"<\chi|Q-Q0|\chi> @ T = %24.14g  %24.14g" % (T, s))
+        print(r"%s<\chi|Q-Q0|\chi> @ T = %24.14g  %24.14g" % (indent*2, T, s))
         list_all.append((T, s))
 
     return list_all

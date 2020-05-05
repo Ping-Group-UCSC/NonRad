@@ -50,7 +50,7 @@ def read_cell_and_pos_qe(prefix):
     '''
 # Read cell parameters
     with open(prefix + ".in", 'r') as f:
-        print("Read from QE input")
+        # print("Read from QE input")
         lines = f.readlines()
 
     vecR = None
@@ -78,7 +78,7 @@ def read_cell_and_pos_qe(prefix):
                     {"species": ''.join(filter(lambda x: x.isalpha(), ar[0])), "pos": pos, "speciesfull": ar[0]})
 
     if (os.path.exists(prefix + ".out")):
-        print("Read from QE output")
+        # print("Read from QE output")
         with open(prefix + ".out", 'r') as f:
             lines = f.readlines()
 
@@ -100,7 +100,8 @@ def read_cell_and_pos_qe(prefix):
                 break
 
         if (i_start is None):
-            print("Not relax calculation, skip .out file")
+            # print("Not relax calculation, skip .out file")
+            pass
         else:
             # Check if it is vc-relax
             # Read cell parameters
