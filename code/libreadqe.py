@@ -106,7 +106,13 @@ def read_eig(folder):
 
 
 def parse_attribute(st):
-    l1 = [x.split("=") for x in st.split()[1:]]
+    try:
+        # st is bytes object but this works in python2
+        l1 = [x.split("=") for x in st.split()[1:]]
+    except TypeError:
+        # raises a TypeError in python3, need to decode st
+        l1 = [x.split("=") for x in st.decode().split()[1:]]
+
     for x in l1:
         x[1] = x[1][1:-1]
         if (x[1].isdigit()):

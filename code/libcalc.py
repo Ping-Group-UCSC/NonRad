@@ -323,9 +323,13 @@ def calc_wif(dir_i, dir_f, ix_defect, ix_bandmin, ix_bandmax, dQ, de=None, spinn
 # Compute dE
     # The hole is always spin-down as in QE number of electrons is always more in spin up
     spin = {"up": 1, "down": 2}[spinname]
+
     folder_q0 = get_save_folder(os.path.join(dir_f, get_ratio_folder(0)))
-#   print(folder_q0)
     ar_eig1_q0 = read_eig(folder_q0)
+
+    '''
+    loop through bands and compute overlap
+    '''
     dic_band_overlap = {}
     for iband in range(ix_bandmin, ix_bandmax+1):
         list_overlap = []
@@ -333,11 +337,11 @@ def calc_wif(dir_i, dir_f, ix_defect, ix_bandmin, ix_bandmax, dQ, de=None, spinn
         dE = float(-ar_eig1_q0[0, spin-1, iband-1, 0] + ar_eig1_q0[0, spin-1, ix_defect-1, 0])
 # Read wavefunction of a perturbed bulk state in final state
 # (This and defect wavefunction should be same Hamiltonian to be meaningful)
-        try:
-            evc1 = read_wave(folder_q0, ispin=spin, ik=1, ib=iband)
-        except:
-            print("Cannot read %s" % folder_q0)
-            continue
+        # try:
+        evc1 = read_wave(folder_q0, ispin=spin, ik=1, ib=iband)
+        # except:
+        #     print("Cannot read %s" % folder_q0)
+        # continue
 
         # list_ratio = []
         for data in list_data2:

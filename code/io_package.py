@@ -74,7 +74,8 @@ def read_cell_and_pos_qe(prefix):
             for line2 in lines[i+1:i+nat+1]:
                 ar = line2.strip().split()
                 pos = np.asarray([float(x) for x in ar[1:]])
-                list_pos.append({"species": filter(lambda x: x.isalpha(), ar[0]), "pos": pos, "speciesfull": ar[0]})
+                list_pos.append(
+                    {"species": ''.join(filter(lambda x: x.isalpha(), ar[0])), "pos": pos, "speciesfull": ar[0]})
 
     if (os.path.exists(prefix + ".out")):
         print("Read from QE output")
@@ -137,7 +138,8 @@ def read_cell_and_pos_qe(prefix):
                     pos = np.dot(vecRi, pos)
                 else:
                     raise ValueError("Unsupported unit %s" % unit_coord)
-                list_pos.append({"species": filter(lambda x: x.isalpha(), ar[0]), "pos": pos, "speciesfull": ar[0]})
+                list_pos.append(
+                    {"species": ''.join(filter(lambda x: x.isalpha(), ar[0])), "pos": pos, "speciesfull": ar[0]})
 #               print(list_pos[-1])
 
     return vecR, list_pos

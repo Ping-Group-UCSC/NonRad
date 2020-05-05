@@ -3,10 +3,6 @@ Introduction
 
 `calc_auto.py` computes nonradiative lifetime from two series of DFT calculations (inital and final states).
 
-
-`calc_hr*.py` compute HR factor from full phonon or 1D effective coordinate method.
-    Support both phononpy or ph.x. See 2018-10-BNnonrad/CN/6x6-pbe-k1/calchr* (Phonopy) and 2018-10-BNnonrad/NBNV/6x6-oop/pbe/calchr (ph.x)  for examples
-
 Required QE calculations
 =============================
 
