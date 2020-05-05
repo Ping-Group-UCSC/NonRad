@@ -1,17 +1,18 @@
 #!/usr/bin/env python
-#Connect all script to calculate
+
+from io_package import read_cell_and_pos_auto
+from libplot import plot_tot_Q, plot_eig_Q, plot_overlap_Q, plot_cp_T
+from libcalc import calc_dQ, calc_freq, calc_wif, calc_phonon_part, calc_cp_T, \
+    calc_phonon_part_T0_HR, calc_lifetime_T, calc_dE
+from libreadqe import read_pos_and_etot_ratio
 import sys
 import os
 import yaml
 import numpy as np
 from numpy.linalg import norm
+
 np.seterr(all="log")
 
-from libreadqe import read_pos_and_etot_ratio
-from libcalc import calc_dQ, calc_freq, calc_wif, calc_phonon_part, calc_cp_T, calc_phonon_part_T0_HR, calc_lifetime_T, calc_dE
-from libplot import plot_tot_Q, plot_eig_Q, plot_overlap_Q, plot_cp_T
-
-from io_package import read_cell_and_pos_auto 
 
 def saveinput():
     with open(file_input, 'w') as f:
@@ -21,6 +22,7 @@ def saveinput():
 def save():
     with open(file_store, 'w') as f:
         yaml.dump(data, f, default_flow_style=False, width=200)
+
 
 def save_dic_ndarray(filename, dic):
     '''
@@ -32,14 +34,14 @@ def save_dic_ndarray(filename, dic):
             np.savetxt(f, ar)
             f.write("\n")
 
-    
+
 def savedata_single_array(filename, database, term, ar):
     '''
     Save an array to a file and record the filename in the database
     '''
     np.savetxt(filename, ar)
     database[term] = filename
-#Call save all after
+# Call save all after
     save()
 
 
@@ -74,22 +76,22 @@ else:
     with open(file_store, 'r') as f:
         data = yaml.load(f.read())
 
-#Set default input values
+# Set default input values
 if ("defectband_spin" not in dinput):
-    dinput["defectband_spin"] = "down" #This is for calculation as PRB 90,075202
+    dinput["defectband_spin"] = "down"  # This is for calculation as PRB 90,075202
 
-if (not "unit" in data):
+if ("unit" not in data):
     data["unit"] = {
-            "dQ" : "aMU^1/2 Ang",
-            "M" : "aMU", 
-            "hbarFreqi" : "meV",
-            "hbarFreqi_error" : "meV",
-            "hbarFreqf" : "meV",
-            "hbarFreqf_error" : "meV",
-            }
+        "dQ": "aMU^1/2 Ang",
+        "M": "aMU",
+        "hbarFreqi": "meV",
+        "hbarFreqi_error": "meV",
+        "hbarFreqf": "meV",
+        "hbarFreqf_error": "meV",
+    }
 
-#Compute dQ
-if (not "dQ" in data and "folder_init_state" in dinput):
+# Compute dQ
+if ("dQ" not in data and "folder_init_state" in dinput):
     print("Compute dQ ...")
     (vecR, list_pos_f), package = read_cell_and_pos_auto(dinput["folder_final_state"] + "/ratio-0.0000/scf")
     (vecR, list_pos_i), package = read_cell_and_pos_auto(dinput["folder_final_state"] + "/ratio-1.0000/scf")
@@ -97,8 +99,8 @@ if (not "dQ" in data and "folder_init_state" in dinput):
     data["dQ"] = dQ
     data["M"] = M
 
-#Plot Q-etot curve
-if (not "filename_Q_etot" in data):
+# Plot Q-etot curve
+if ("filename_Q_etot" not in data):
     filename = "tot_Q.png"
     data["filename_Q_etot"] = filename
     print("Plot Q-etot ...")
@@ -106,24 +108,24 @@ if (not "filename_Q_etot" in data):
     list_data_f, vecR = read_pos_and_etot_ratio(dinput["folder_final_state"])
     ar_i, ar_f = plot_tot_Q(filename, list_data_i, list_data_f, dinput["dE"], data["dQ"])
 
-#Save Q-etot data
+# Save Q-etot data
     savedata_single_array("tot_Q_i.txt", data, "filename_Q_etot_i", ar_i)
     savedata_single_array("tot_Q_f.txt", data, "filename_Q_etot_f", ar_f)
-    
-if (not "dErelf" in data):
-    dEf =  calc_dE(dinput["folder_final_state"])
-    dEi =  calc_dE(dinput["folder_init_state"])
+
+if ("dErelf" not in data):
+    dEf = calc_dE(dinput["folder_final_state"])
+    dEi = calc_dE(dinput["folder_init_state"])
     data["dErelf"] = dEf
     data["dEreli"] = dEi
 
-#Compute frequency
-if (not "hbarFreqi" in data):
-#From 0-0.15 and 0-0.20
+# Compute frequency
+if ("hbarFreqi" not in data):
+    # From 0-0.15 and 0-0.20
     r1 = dinput["ratio_init"]
     r2 = abs(r1 - 0.15)
     if (r1 > r2):
-        r1,r2 = (r2,r1)
-    freq, freq_error, list_result, S = calc_freq(dinput["folder_init_state"], ratio_min = r1, ratio_max = r2, dQ = data["dQ"])
+        r1, r2 = (r2, r1)
+    freq, freq_error, list_result, S = calc_freq(dinput["folder_init_state"], ratio_min=r1, ratio_max=r2, dQ=data["dQ"])
     data["hbarFreqi"] = freq * 1000
     data["hbarFreqi_error"] = freq_error * 1000
     data["hbarFreqi_order"] = list_result
@@ -132,27 +134,29 @@ if (not "hbarFreqi" in data):
     r1 = dinput["ratio_final"]
     r2 = abs(r1 - 0.15)
     if (r1 > r2):
-        r1,r2 = (r2,r1)
+        r1, r2 = (r2, r1)
 
-    freq, freq_error, list_result, S = calc_freq(dinput["folder_final_state"], ratio_min = r1, ratio_max = r2, dQ = data["dQ"])
+    freq, freq_error, list_result, S = calc_freq(
+        dinput["folder_final_state"], ratio_min=r1, ratio_max=r2, dQ=data["dQ"])
     data["hbarFreqf"] = freq * 1000
     data["hbarFreqf_error"] = freq_error * 1000
     data["hbarFreqf_order"] = list_result
     data["S_f"] = S
 
-if (not "hbarFreqi_to02_order" in data):
+if ("hbarFreqi_to02_order" not in data):
     r1 = dinput["ratio_init"]
     r2 = abs(r1 - 0.20)
     if (r1 > r2):
-        r1,r2 = (r2,r1)
-    freq, freq_error, list_result, S = calc_freq(dinput["folder_init_state"], ratio_min = r1, ratio_max = r2, dQ = data["dQ"])
+        r1, r2 = (r2, r1)
+    freq, freq_error, list_result, S = calc_freq(dinput["folder_init_state"], ratio_min=r1, ratio_max=r2, dQ=data["dQ"])
     data["hbarFreqi_to02_order"] = list_result
 
     r1 = dinput["ratio_final"]
     r2 = abs(r1 - 0.20)
     if (r1 > r2):
-        r1,r2 = (r2,r1)
-    freq, freq_error, list_result, S = calc_freq(dinput["folder_final_state"], ratio_min = r1, ratio_max = r2, dQ = data["dQ"])
+        r1, r2 = (r2, r1)
+    freq, freq_error, list_result, S = calc_freq(
+        dinput["folder_final_state"], ratio_min=r1, ratio_max=r2, dQ=data["dQ"])
     data["hbarFreqf_to02_order"] = list_result
 
 if (not isinstance(dinput["bulkband_index"], list) or not isinstance(dinput["defectband_index"], int)):
@@ -161,15 +165,15 @@ if (not isinstance(dinput["bulkband_index"], list) or not isinstance(dinput["def
     sys.exit(1)
 
 if ("Wif" not in data or "WifBand" not in data):
-#Calculate Wif
-#Plot and store data
+    # Calculate Wif
+    # Plot and store data
     dic_eig_occ, diffEigQ0, dic_band_overlap, dic_wif, ixband_wifmax, wif = calc_wif(
-            dinput["folder_init_state"], dinput["folder_final_state"], dinput["defectband_index"],
-            dinput["bulkband_index"][0], 
-            dinput["bulkband_index"][1], 
-            data["dQ"],
-            de = None,
-            spinname=dinput["defectband_spin"])
+        dinput["folder_init_state"], dinput["folder_final_state"], dinput["defectband_index"],
+        dinput["bulkband_index"][0],
+        dinput["bulkband_index"][1],
+        data["dQ"],
+        de=None,
+        spinname=dinput["defectband_spin"])
 
     for (statename, spin), val in dic_eig_occ.items():
         casename = "%s-%s" % (statename, "up" if spin == 1 else "down")
@@ -185,7 +189,7 @@ if ("Wif" not in data or "WifBand" not in data):
     save_dic_ndarray(filename, dic_band_overlap)
 
     plot_overlap_Q("overlap.png", dic_band_overlap, dic_wif, data["dQ"], diffEigQ0)
-    
+
     data["diffEigQ0"] = diffEigQ0
     data["Wif"] = wif
     data["WifBand"] = ixband_wifmax
@@ -198,33 +202,33 @@ if (not isinstance(dinput["dE"], float) or "The " in dinput["dimension"]):
 
 if ("filename_phonon_part" not in data):
     list_phonon_part = calc_phonon_part(
-            dinput["dE"], 
-            data["dQ"], 
-            data["hbarFreqi"], 
-            data["hbarFreqf"], 
-            dinput["temperature"])
+        dinput["dE"],
+        data["dQ"],
+        data["hbarFreqi"],
+        data["hbarFreqf"],
+        dinput["temperature"])
 
     savedata_single_array("phonon_part.txt", data, "filename_phonon_part", list_phonon_part)
 else:
     list_phonon_part = np.loadtxt("phonon_part.txt")
 
-#Calculate the apporximate phonon part at T=0
+# Calculate the apporximate phonon part at T=0
 if ("phonon_part_T0_HR" not in data):
     data["phonon_part_T0_HR"] = calc_phonon_part_T0_HR(
-            dinput["dE"], 
-            data["dQ"], 
-            data["hbarFreqf"])
+        dinput["dE"],
+        data["dQ"],
+        data["hbarFreqf"])
 
 if ("filename_Cp_tilde" in data):
     list_cp = np.loadtxt("cp_T.txt")
 else:
-#Read and compute volume
+    # Read and compute volume
     (vecR, list_pos_f), package = read_cell_and_pos_auto(dinput["folder_final_state"] + "/ratio-0.0000/scf")
     if (dinput["dimension"] == "xyz"):
-        vol = np.dot(np.cross(vecR[:,0], vecR[:,1]), vecR[:,2])
+        vol = np.dot(np.cross(vecR[:, 0], vecR[:, 1]), vecR[:, 2])
         dim = 3
     elif (dinput["dimension"] == "xy"):
-        vol = norm(np.cross(vecR[:,0], vecR[:,1]))
+        vol = norm(np.cross(vecR[:, 0], vecR[:, 1]))
         dim = 2
     else:
         print("Unsupported dimension '%s'" % dinput["dimension"])

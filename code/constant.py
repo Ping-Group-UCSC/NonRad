@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from math import pi
 
-#Constants
+# Constants
 Ry2eV = 13.6056917
 Ha2eV = Ry2eV * 2
 Ang2cm = 1e-8
