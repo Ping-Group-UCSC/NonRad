@@ -1,9 +1,0 @@
-Nonradiative lifetime 
-
-1. Obtain relaxed geometry of the ground state electrong state ( a normal QE relax)
-    and of the excited state with defect-defect transition (by QE relax with occupation numbers fixed; one occupied defect band in ground state occupation number set to 0, and one empty defect band in ground state set to 1, to simulate the excitation
-    state)
-
-2. Generate a series of linear interpolated structure (by running mix_structure_linear.py under specific folder) and run SCF calculation for both ground state and excited state
-
-3. Compute the nonradiative lifetime accordingly
