@@ -7,7 +7,7 @@ try:
     # python2
     import cPickle as pickle
 except ModuleNotFoundError:
-    import pickle
+    import pickle  # noqa: F401
 
 list_color = ["black", "red", "blue", "darkgreen", "orange", "magenta", "darkgoldenrod", "coral",
               "lightskyblue", "darkolivegreen", "wheat", "lightcoral", "blueviolet", "lightseagreen", "gold"]

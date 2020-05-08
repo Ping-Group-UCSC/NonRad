@@ -7,6 +7,9 @@ indent = '    '
 # Constants
 Ry2eV = 13.6056917
 Ha2eV = Ry2eV * 2
+GHz2eV = 4.13566553853598e-6
+GHz2Ha = GHz2eV / Ha2eV
+
 Ang2cm = 1e-8
 Electron2Coulomb = 1.60217662e-19
 Ha2J = Ha2eV * Electron2Coulomb
@@ -22,8 +25,8 @@ h_eVs = 4.135667662e-15
 h_Js = 6.626070040e-34
 hbar_eVs = h_eVs / 2 / pi
 hbar_Js = h_Js / 2 / pi
-Kelvin2au = 1/3.1577464e5
-second2au = 1/2.418884326505e-17
+Kelvin2au = 1 / 3.1577464e5
+second2au = 1 / 2.418884326505e-17    # this is Ha to Hz, confusing name (comes from taking hbar/Eh)
 
 THz2cmm1 = 33.35643
 THzOrd2meV = 4.13566903434377990

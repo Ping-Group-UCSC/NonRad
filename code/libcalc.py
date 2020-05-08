@@ -5,7 +5,7 @@ import numpy as np
 from math import sqrt, exp, pi
 from numpy.linalg import norm
 from constant import Ry2eV, Electron2Coulomb, Ang2m, AMU2kg, hbar_eVs, hbar_Js, AMU2me, Ang2Bohr, Ha2eV, Kelvin2au, \
-    Bohr2m, Bohr2Ang, second2au
+    Bohr2m, Bohr2Ang, second2au, GHz2Ha
 import glob
 
 from chem_utils import f_Element_Symbol_to_Mass
@@ -102,7 +102,7 @@ def calc_freq(folder, ratio_min, ratio_max, dQ):
                         if (line.startswith(tag)):
                             etot = float(line.split()[-2]) * Ry2eV
                             break
-            except:
+            except:  # noqa: E722
                 raise ValueError("Error reading %s" % (filename.replace(".in", ".out")))
             list_data.append({"ratio": ratio, "etot": etot})
 
@@ -201,11 +201,7 @@ def calc_wif_standalone(dir1, dir2, ix_defect, ix_bandmin, ix_bandmax, de=None):
     spin2 = 2
 
     for iband in range(ix_bandmin, ix_bandmax+1):
-        try:
-            evc1 = read_wave(folder2_q0, spin2, 1, iband)
-        except:
-            print("Cannot read %s" % folder2_q0)
-            continue
+        evc1 = read_wave(folder2_q0, spin2, 1, iband)
         if (de is None):
             dE = -ar_eig2_q0[0, spin1-1, iband-1, 0] + ar_eig2_q0[0, spin2-1, ix_defect-1, 0]
         else:
@@ -344,11 +340,7 @@ def calc_wif(dir_i, dir_f, ix_defect, ix_bandmin, ix_bandmax, dQ, de=None, spinn
         dE = float(-ar_eig1_q0[0, spin-1, iband-1, 0] + ar_eig1_q0[0, spin-1, ix_defect-1, 0])
 # Read wavefunction of a perturbed bulk state in final state
 # (This and defect wavefunction should be same Hamiltonian to be meaningful)
-        # try:
         evc1 = read_wave(folder_q0, ispin=spin, ik=1, ib=iband)
-        # except:
-        #     print("Cannot read %s" % folder_q0)
-        # continue
 
         # list_ratio = []
         for data in list_data2:
@@ -396,9 +388,9 @@ def calc_wif(dir_i, dir_f, ix_defect, ix_bandmin, ix_bandmax, dQ, de=None, spinn
     return dic_eig_occ, dE, dic_band_overlap, dic_wif, ixband_wifmax, wif
 
 
-def calc_phonon_part_T0_HR(dE, dQ, freq):
+def calc_phonon_part_T0_HR(dE, dQ, freq, order_x):
     '''
-    Calculate the phono part in Eq 22 at T=0 (only ni=0 included)
+    Calculate the phonon part in Eq 22 at T=0 (only ni=0 included)
     And assume freqi=freqf
     '''
     freqi = freq
@@ -428,21 +420,20 @@ def calc_phonon_part_T0_HR(dE, dQ, freq):
     for m in range(mmax, mmin, -1):
         dEph = dE + n * freqi - m * freqf
         coef = exp(- dEph ** 2 / (2 * sigma ** 2)) / (sigma * sqrt(2 * pi))
-        overlap = overlap_x_quantum_harmonic_ladder_hr(m,
-                                                       dQ,
-                                                       1,
-                                                       freqi,
-                                                       )
+        overlap = overlap_x_quantum_harmonic_ladder_hr(m, dQ, 1, freqi, order_x)
 
         s1 += overlap**2 * coef
         print("%sContribution: %3i %3i %14.7g %14.7g" % (indent*3, n, m, coef, overlap**2))
     s += s1
 
-    print(r"%s<\chi|Q-Q0|\chi> @ T = %d ~=  %24.14g" % (indent*2, 0, s))
+    if order_x == 1:
+        print(r"%s<\chi_n|Q-Q0|\chi_m> @ T = %d ~=  %24.14g" % (indent*2, 0, s))
+    elif order_x == 0:
+        print(r"%s<\chi_n|\chi_m> @ T = %d ~=  %24.14g" % (indent*2, 0, s))
     return s
 
 
-def calc_phonon_part(dE, dQ, freqi, freqf, list_T):
+def calc_phonon_part(dE, dQ, freqi, freqf, list_T, order_x):
     '''
     Calculate the phonon part in Eq 22
 
@@ -475,13 +466,8 @@ def calc_phonon_part(dE, dQ, freqi, freqf, list_T):
         i = (ni, mf)
         if (i not in cache_overlap_x):
             #           print(ni, mf, dQ, freqi, freqf)
-            cache_overlap_x[i] = overlap_x_quantum_harmonic_num(ni, mf,
-                                                                dQ,
-                                                                1,
-                                                                freqi,
-                                                                1,
-                                                                freqf
-                                                                )
+            cache_overlap_x[i] = overlap_x_quantum_harmonic_num(
+                ni, mf, dQ, 1, freqi, 1, freqf, order_x)
 
         return cache_overlap_x[i]
 
@@ -538,7 +524,11 @@ def calc_phonon_part(dE, dQ, freqi, freqf, list_T):
                       (indent*3, n, m, n_b, coef, overlap**2))
             s += s1 * n_b
 
-        print(r"%s<\chi|Q-Q0|\chi> @ T = %24.14g  %24.14g" % (indent*2, T, s))
+        if order_x == 1:
+            print(r"%s<\chi_n|Q-Q0|\chi_m> @ T = %24.14g  %24.14g" % (indent*2, T, s))
+        elif order_x == 0:
+            print(r"%s<\chi_n|\chi_m> @ T = %24.14g  %24.14g" % (indent*2, T, s))
+
         list_all.append((T, s))
 
     return list_all
@@ -562,15 +552,41 @@ def calc_cp_T(dim, vol, g, wif, list_phonon_part):
     return list_cp
 
 
-def calc_lifetime_T(g, wif, list_phonon_part):
+def calc_lifetime_T(g, wif, list_phonon_part, job):
     '''
     Calculate lifetime (as concentration of calculation)
     '''
-    wif = wif / Ha2eV / (AMU2me**0.5 / Bohr2Ang)
+
+    '''
+    Some notes on units here!
+    if job == 'nonrad':
+        cp = 2pi/hbar * wif^2 * xif
+        wif [energy/dQ] = [eV/(sqrt(AMU)*Ang)]
+        xif [deltaQ^2/energy] = [(me*bohr^2)/Ha]
+    elif job == 'isc':
+        cp = 4pi*hbar * wif^2 * xif
+        NOTE wif is lamba_t in this case
+        wif [frequency] = [GHz]
+        xif [1/energy] = [1/Ha]
+
+    '''
+
+    # determine the prefactor
+    if job == 'nonrad':
+        # wif [eV/(sqrt(AMU)*Ang)] -> [Ha/(sqrt(me)*bohr)]
+        wif = wif / Ha2eV / (AMU2me**0.5 / Bohr2Ang)
+        prefactor = 2 * pi * g * wif ** 2
+
+    elif job == 'isc':
+        # convert GHz to Ha (note this multiplying hbar^2 in given units)
+        wif *= GHz2Ha
+        prefactor = 4 * pi * g * wif ** 2
 
     list_lifetime = []
     for temperature, osc in list_phonon_part:
-        cp = 2 * pi * g * wif ** 2 * osc * second2au
+        # note second2au is Ha -> Hz (1/hbar in given units)
+        cp = prefactor * osc * second2au
+
         list_lifetime.append([temperature, 1/cp])
 
     return list_lifetime

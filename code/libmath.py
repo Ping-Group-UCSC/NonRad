@@ -408,7 +408,7 @@ def overlap_x_quantum_harmonic_ladder(ni, nf, Ri, mi, freqi, mf, freqf, order_x=
         return t
 
 
-def overlap_x_quantum_harmonic_ladder_hr(nf, Ri, mf, freqf, order_x=1, debug_print=False):
+def overlap_x_quantum_harmonic_ladder_hr(nf, Ri, mf, freqf, order_x, debug_print=False):
     '''
     Using Huang-Rhys factor to compute the <0|n> integral and <0|x|n> integral
     initial/final m and frequency are approximate to be same to applied equation
@@ -418,7 +418,7 @@ def overlap_x_quantum_harmonic_ladder_hr(nf, Ri, mf, freqf, order_x=1, debug_pri
     if (order_x == 0):
         return exp(-S/2) * S**(nf/2.0) / sqrt(factorial(nf))
 
-    if (order_x == 1):
+    elif (order_x == 1):
         if (nf >= 1):
             ta = overlap_x_quantum_harmonic_ladder_hr(nf-1, Ri, mf, freqf, order_x=0, debug_print=debug_print)
         else:
@@ -430,6 +430,9 @@ def overlap_x_quantum_harmonic_ladder_hr(nf, Ri, mf, freqf, order_x=1, debug_pri
         cc = 1 / sqrt(mfreqf * 2) * sqrt(nf+1)
         t = ca * ta + cc * tc
         return t
+
+    else:
+        raise ValueError('Only order_x = 1 and 0 is implemented in this function')
 
 
 def eval_gaussian(x, n_level, n_order, R, m, freq):
@@ -487,18 +490,24 @@ def eval_quantum_harmonic(x, n, R, m, freq):
 
 def eval_overlap_x(x, ni, nf, Ri, mi, freqi, mf, freqf, order_x):
     '''
-    Evaluete  chi_fm(x) * x  * chi_in(x)
+    Evaluate  chi_fm(x) * x**order_x  * chi_in(x)
     '''
-    y = eval_quantum_harmonic(x, nf, 0, mf, freqf) * x**order_x * eval_quantum_harmonic(x, ni, Ri, mi, freqi)
+    if order_x == 0:
+        # chi_fm(x) * chi_in(x)
+        y = eval_quantum_harmonic(x, nf, 0, mf, freqf) * eval_quantum_harmonic(x, ni, Ri, mi, freqi)
+    else:
+        # chi_fm(x) * x**order_x * chi_in(x)
+        y = eval_quantum_harmonic(x, nf, 0, mf, freqf) * x**order_x * eval_quantum_harmonic(x, ni, Ri, mi, freqi)
 #   print(x, y)
     return y
 
 
-def overlap_x_quantum_harmonic_num(ni, nf, Ri, mi, freqi, mf, freqf, order_x=1):
+def overlap_x_quantum_harmonic_num(ni, nf, Ri, mi, freqi, mf, freqf, order_x):
     '''
-    Numerical integration of <chi_jm|Q-Q0|chi_in> where Q0 is equalibrium geomeotry of chi_i
+    Numerical integration of <chi_jm|Q-Q0|chi_in> where Q0 is equilibrium geomeotry of chi_i
     This is equavlent to <chi_jm|Q|chi_in> with origin shifted so chi_i is located at zero
     '''
+    # integration of overlap
     y, abserr = scipy.integrate.quad(
         eval_overlap_x, -np.inf, np.inf, args=(ni, nf, Ri, mi, freqi, mf, freqf, order_x), limit=500
     )
