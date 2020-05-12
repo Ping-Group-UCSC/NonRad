@@ -108,17 +108,20 @@ def main():
         with open(file_store, 'r') as f:
             data = yaml.load(f.read(), Loader=yaml.FullLoader)
 
-    # check band index provided is of an okay format
-    if (not isinstance(dinput['bulkband_index'], list) or not isinstance(dinput['defectband_index'], int)):
-        print("Error: Encountered when checking provided bulkband_index (must be a list of integers)")
-        error_with_input()
+    # specific to nonrad checks
+    if dinput['job'] == 'nonrad':
+        # check band index provided is of an okay format
+        if (not isinstance(dinput['bulkband_index'], list) or not isinstance(dinput['defectband_index'], int)):
+            print("Error: Encountered when checking provided bulkband_index (must be a list of integers)")
+            error_with_input()
+        # check that dimension was provided
+        if "The " in dinput['dimension']:
+            print("Error: Encountered when checking provided dimension")
+            error_with_input()
+
     # check that type of dE is correct
     if not isinstance(dinput['dE'], float):
         print("Error: Encountered when checking provided dE (must be a float)")
-        error_with_input()
-    # check that dimension was provided
-    if "The " in dinput['dimension']:
-        print("Error: Encountered when checking provided dimension")
         error_with_input()
 
     # Set default input values
