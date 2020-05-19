@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --job-name=NV
+#SBATCH --output=qe.%j.out
+#SBATCH --nodes=6
+#SBATCH --ntasks-per-node=16
+#SBATCH --time=4:00:00
+# SBATCH --dependency=afterany:
+# SBATCH --partition=debug
+
+module add intel/17.0.5.239 impi/2017
+MPICMD="mpirun -genv I_MPI_FABRICS shm:ofa -n $SLURM_NTASKS"
+pwdir=/export/data/share/wufeng/programs-intel2017.5/qe-6.1-scal/bin
+
+$MPICMD $pwdir/pw.x -nk 6 -inp relax.in > relax.out

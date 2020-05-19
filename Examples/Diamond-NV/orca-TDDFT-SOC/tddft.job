@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH -J orca
+#SBATCH -o x.%j.out
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=36
+#SBATCH -t 4:00:00
+#SBATCH -p pbatch
+
+module swap impi openmpi/3.0.1
+orca="/p/lustre2/smart8/Programs/orca/orca_4_2_1_linux_x86-64_openmpi314/orca"
+
+$orca tddft.in > tddft.out
+

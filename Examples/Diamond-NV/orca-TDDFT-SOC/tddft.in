@@ -1,0 +1,13 @@
+# functional/basis
+! PBE def2-TZVP
+
+# TDDFT block
+%TDDFT  NROOTS  5
+        DOSOC   TRUE
+END
+
+# geometry
+* xyzFile -1 1 nv_cluster.xyz
+
+# parallelization
+%PAL NPROCS 72 END

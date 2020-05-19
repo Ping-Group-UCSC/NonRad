@@ -1,0 +1,9 @@
+job: isc
+folder_final_state: ../../lin1/
+folder_init_state: ../../lin2/
+ratio_final: 0.0
+ratio_init: 1.0
+dE: 0.4
+temperature: [10,50,100,300,600]
+g: 1
+lambda_t: 29.53
