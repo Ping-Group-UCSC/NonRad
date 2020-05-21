@@ -84,30 +84,26 @@ def read_eig(folder):
 
     :return: Array in ik, ispin, ib, 1/2 (for eigenvalues and occupations numbers)
     '''
-    try:
-        t1 = ET.parse(os.path.join(folder, "data-file.xml")).getroot()
-        nk = int(t1.find("BRILLOUIN_ZONE/NUMBER_OF_K-POINTS").text)
-        list_spin = [".1", ".2"] if t1.find("SPIN/LSDA").text.strip() == "T" else [""]
-        # list_data = []
-        ar = None
-        for ik in range(1, nk+1):
-            for ispin, stspin in enumerate(list_spin):
-                filename = t1.find("EIGENVALUES/K-POINT.%i/DATAFILE%s" % (ik, stspin)).attrib["iotk_link"]
-                t2 = ET.parse(os.path.join(folder, filename)).getroot()
-                data = np.asarray([float(x) for x in t2.find("EIGENVALUES").text.split()])
-                occ = np.asarray([float(x) for x in t2.find("OCCUPATIONS").text.split()])
-                unit = t2.find("UNITS_FOR_ENERGIES").attrib["UNITS"]
-                if (unit == "Hartree"):
-                    data = data * Ha2eV
-                else:
-                    raise ValueError("Unkown unit")
-                if (ar is None):
-                    ar = np.zeros((nk, len(list_spin), len(data), 2), dtype=np.float64)
-                ar[ik-1, ispin, :, 0] = data
-                ar[ik-1, ispin, :, 1] = occ
-    except:
-        raise ValueError("Error in reading %s" % folder)
-        return None
+    t1 = ET.parse(os.path.join(folder, "data-file.xml")).getroot()
+    nk = int(t1.find("BRILLOUIN_ZONE/NUMBER_OF_K-POINTS").text)
+    list_spin = [".1", ".2"] if t1.find("SPIN/LSDA").text.strip() == "T" else [""]
+    # list_data = []
+    ar = None
+    for ik in range(1, nk+1):
+        for ispin, stspin in enumerate(list_spin):
+            filename = t1.find("EIGENVALUES/K-POINT.%i/DATAFILE%s" % (ik, stspin)).attrib["iotk_link"]
+            t2 = ET.parse(os.path.join(folder, filename)).getroot()
+            data = np.asarray([float(x) for x in t2.find("EIGENVALUES").text.split()])
+            occ = np.asarray([float(x) for x in t2.find("OCCUPATIONS").text.split()])
+            unit = t2.find("UNITS_FOR_ENERGIES").attrib["UNITS"]
+            if (unit == "Hartree"):
+                data = data * Ha2eV
+            else:
+                raise ValueError("Unkown unit")
+            if (ar is None):
+                ar = np.zeros((nk, len(list_spin), len(data), 2), dtype=np.float64)
+            ar[ik-1, ispin, :, 0] = data
+            ar[ik-1, ispin, :, 1] = occ
 
     return ar
 
