@@ -38,6 +38,13 @@ def read_pos_and_etot_ratio(folder=None):
     '''
     if (folder is None):
         folder = os.getcwd()
+
+    # check for folders/files
+    if not glob.glob('%s/ratio-*' % folder):
+        raise FileNotFoundError("folders %s/ratio-* do not exist" % folder)
+    elif not glob.glob("%s/ratio-*/scf.out" % folder):
+        raise FileNotFoundError("files %s/ratio-*/scf.out do not exist" % folder)
+
     list_data = []
     for filename in glob.glob("%s/ratio-*/scf.out" % folder):
         ratio = float(re.match(".*ratio-(.+)/scf.out", filename).group(1))

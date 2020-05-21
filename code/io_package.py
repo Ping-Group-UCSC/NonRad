@@ -17,12 +17,12 @@ def read_cell_and_pos_auto(arg):
     Detect file type and read lattice information
     All returned positions are in unit of angstrom
     '''
-    if (os.path.exists(arg + ".in")):
-        return read_cell_and_pos_qe(arg), "qe"
-    elif ("POSCAR" in arg or "CONTCAR" in arg):
+    if ("POSCAR" in arg or "CONTCAR" in arg):
         return read_cell_and_pos_poscar(arg), "vasp"
+    elif (os.path.exists(arg + ".in")):
+        return read_cell_and_pos_qe(arg), "qe"
     else:
-        return None, None
+        raise FileNotFoundError("File %s.in does not exist" % arg)
 
 
 def write_cell_and_pos_auto(package, *args, **kwargs):
