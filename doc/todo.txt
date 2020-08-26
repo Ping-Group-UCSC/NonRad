@@ -1,3 +1,4 @@
 Edit code to include alternative transitions (i.e. SOC which is <phi_j|phi_k> and no Wif)
 Edit code to not make plotting an option (and by default turn it off)
 Allow code to read in prefix/outdir to improve how it finds .save folder
+
