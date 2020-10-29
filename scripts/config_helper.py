@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import pw2py as pw
 import glob
 import scipy.constants
+import warnings
+
+
+warnings.warn("This script is not tested and may be wrong!!!")
 
 
 # constants for conversions
@@ -16,11 +20,11 @@ atomic_mass = scipy.constants.atomic_mass
 def read_full_dat() -> dict:
     ''' read linear extrapolation data '''
     full_dat = {}
-    for lin in sorted(glob.glob('lin*')):
+    for lin in sorted(glob.glob('lin*/')):
         full_dat[lin] = []
-        for rat in sorted(glob.glob(f'{lin}/ratio-*')):
-            ratio = float(rat.split('-')[-1])
-            energy = pw.qeout.final_energy(f'{rat}/scf.out')[0]
+        for rat in sorted(glob.glob(f'{lin}ratio-*/')):
+            ratio = float(rat.split('-')[-1][:-1])
+            energy = pw.qeout.final_energy(f'{rat}scf.out')[0]
             full_dat[lin].append([ratio, energy])
         full_dat[lin] = np.array(full_dat[lin])
 
