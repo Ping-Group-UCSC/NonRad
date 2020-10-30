@@ -27,6 +27,10 @@ def get_save_folder(folder):
     filename = None
     for filename in glob.glob("%s/*.save" % folder):
         break
+    if filename is None:
+        # also check temp which is a common outdir name
+        for filename in glob.glob("%s/temp/*.save" % folder):
+            break
     return filename
 
 
