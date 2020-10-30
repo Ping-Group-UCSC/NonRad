@@ -77,7 +77,9 @@ def calc_dE(dir1):
 def calc_freq(folder, ratio_min, ratio_max, dQ):
     '''
     Fit the effective 1D frequency from scf total energy and Q
-    Data are selected from ratio_min to ratio_max; it is assumed near a minimum
+    Data are selected from ratio_min to ratio_max
+
+    raises AssertionError if minimum is not at 0 or 1
     '''
     import warnings
     # ignore warning by polyfit
@@ -130,17 +132,9 @@ def calc_freq(folder, ratio_min, ratio_max, dQ):
     ar_ratio = np.asarray([x["ratio"] for x in list_data])
     ar_etot = np.asarray([x["etot"] for x in list_data])
 
-# Check if near the minimum (assume minimum near 0 or 1)
-    if (ratio_min-tol <= 0 and 0 <= ratio_max+tol):
-        x0 = 0
-    elif (ratio_min-tol <= 1 and 1 <= ratio_max+tol):
-        x0 = 1
-
-# Put assume minimum to 0
-    ar_ratio = np.abs(x0 - ar_ratio)
-
-    if (np.argmin(ar_etot) != np.argmin(ar_ratio)):
-        raise ValueError("Mininum is not near %f, stopped" % x0)
+    ar_ratio_min = ar_ratio[np.argmin(ar_etot)]
+    min_at_0_or_1 = np.any(np.isclose(ar_ratio_min, [0, 1], atol=tol))
+    assert min_at_0_or_1, "Minimum must be at ratio = 0 or 1, true min at: %f" % ar_ratio_min
 
 # Fit with different orders
 # Maxmumly one order less than number of points
