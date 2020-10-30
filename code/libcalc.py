@@ -132,9 +132,9 @@ def calc_freq(folder, ratio_min, ratio_max, dQ):
     ar_ratio = np.asarray([x["ratio"] for x in list_data])
     ar_etot = np.asarray([x["etot"] for x in list_data])
 
-    ar_ratio_min = ar_ratio[np.argmin(ar_etot)]
-    min_at_0_or_1 = np.any(np.isclose(ar_ratio_min, [0, 1], atol=tol))
-    assert min_at_0_or_1, "Minimum must be at ratio = 0 or 1, true min at: %f" % ar_ratio_min
+    # ar_ratio_min = ar_ratio[np.argmin(ar_etot)]
+    # min_at_0_or_1 = np.any(np.isclose(ar_ratio_min, [0, 1], atol=tol))
+    # assert min_at_0_or_1, "Minimum must be at ratio = 0 or 1, true min at: %f" % ar_ratio_min
 
 # Fit with different orders
 # Maxmumly one order less than number of points
