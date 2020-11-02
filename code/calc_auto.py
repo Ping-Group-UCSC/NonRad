@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from __future__ import print_function
 
@@ -17,6 +17,32 @@ from datetime import datetime
 from constant import indent
 
 np.seterr(all="log")
+
+
+def compute_frequency(sid, dinput, data):
+    '''
+    sid should be 'i' or 'f' for initial or final
+    '''
+    assert sid in ['i', 'f'], "s should be 'i' or 'f' for initial or final"
+    lid = 'init' if sid == 'i' else 'final'
+    # computing final frequency
+    r1 = dinput[f'ratio_{lid}_min']
+    r2 = dinput[f'ratio_{lid}_max']
+    freq, freq_error, list_result, S = calc_freq(
+        dinput[f'folder_{lid}_state'], ratio_min=r1, ratio_max=r2, dQ=data['dQ'])
+    data[f'hbarFreq{sid}'] = freq * 1000
+    data[f'hbarFreq{sid}_error'] = freq_error * 1000
+    data[f'hbarFreq{sid}_order'] = list_result
+    data[f'S_{sid}'] = S
+    data[f'hbarFreq{sid}_to02_order'] = list_result
+
+    # print statements
+    print(f"{indent*3}hbarFreq{sid} = {data['hbarFreq{sid}']}"
+    print(f"{indent*3}S_{sid} = {data['S_{sid}']}"
+    print(f"{indent*2}hbarFreq{sid} to higher orders:"
+    print(f"{indent*3}order hbarFreq{sid}(meV)"
+    for _result in data['hbarFreq{sid}']:
+        print(f"{indent*3}{result['order']:5d} {result['hbarfreq']}")
 
 
 def main():
@@ -193,35 +219,54 @@ def main():
     # Compute frequency
     if ("hbarFreqi" not in data):
         print("\n{}Computing frequency".format(indent))
-        # From 0-0.15 and 0-0.20
 
-        # computing initial frequency
-        r1 = dinput['ratio_init_min']
-        r2 = dinput['ratio_init_max']
-        freq, freq_error, list_result, S = calc_freq(
-            dinput['folder_init_state'], ratio_min=r1, ratio_max=r2, dQ=data['dQ'])
-        data['hbarFreqi'] = freq * 1000
-        data['hbarFreqi_error'] = freq_error * 1000
-        data['hbarFreqi_order'] = list_result
-        data['S_i'] = S
-        data['hbarFreqi_to02_order'] = list_result
-        print("{}hbarFreqi = {}".format(indent*3, data['hbarFreqi']))
-        print("{}S_i = {}".format(indent*3, data['S_i']))
+        # compute i(nitial)
+        compute_frequency('i', dinput, data)
+        # compute f(inal)
+        compute_frequency('f', dinput, data)
 
-        # computing final frequency
-        r1 = dinput['ratio_final_min']
-        r2 = dinput['ratio_final_max']
-        freq, freq_error, list_result, S = calc_freq(
-            dinput['folder_final_state'], ratio_min=r1, ratio_max=r2, dQ=data['dQ'])
-        data['hbarFreqf'] = freq * 1000
-        data['hbarFreqf_error'] = freq_error * 1000
-        data['hbarFreqf_order'] = list_result
-        data['S_f'] = S
-        data['hbarFreqf_to02_order'] = list_result
-        print("{}hbarFreqf = {}".format(indent*3, data['hbarFreqf']))
-        print("{}S_f = {}".format(indent*3, data['S_f']))
-        print("{}hbarFreq_to02_order (i,f) = ({}, {})".format(
-            indent*2, data['hbarFreqi_to02_order'], data['hbarFreqf_to02_order']))
+        # # computing initial frequency
+        # r1 = dinput['ratio_init_min']
+        # r2 = dinput['ratio_init_max']
+        # freq, freq_error, list_result, S = calc_freq(
+        #     dinput['folder_init_state'], ratio_min=r1, ratio_max=r2, dQ=data['dQ'])
+        # data['hbarFreqi'] = freq * 1000
+        # data['hbarFreqi_error'] = freq_error * 1000
+        # data['hbarFreqi_order'] = list_result
+        # data['S_i'] = S
+        # data['hbarFreqi_to02_order'] = list_result
+        # print("{}hbarFreqi = {}".format(indent*3, data['hbarFreqi']))
+        # print("{}S_i = {}".format(indent*3, data['S_i']))
+        # 
+        # # print higher orders:
+        # print("{}hbarFreqi to higher orders:".format(indent*2))
+        # print("{}order hbarFreqi(meV)".format(indent*3))
+        # for _result in data['hbarFreqi_to02_order']:
+        #     _order = _result['order']
+        #     _freq = _result['hbarfreq']
+        #     print("{}{:5d} {}".format(indent*3, _order, _freq))
+
+        # # computing final frequency
+        # r1 = dinput['ratio_final_min']
+        # r2 = dinput['ratio_final_max']
+        # freq, freq_error, list_result, S = calc_freq(
+        #     dinput['folder_final_state'], ratio_min=r1, ratio_max=r2, dQ=data['dQ'])
+        # data['hbarFreqf'] = freq * 1000
+        # data['hbarFreqf_error'] = freq_error * 1000
+        # data['hbarFreqf_order'] = list_result
+        # data['S_f'] = S
+        # data['hbarFreqf_to02_order'] = list_result
+        # print("{}hbarFreqf = {}".format(indent*3, data['hbarFreqf']))
+        # print("{}S_f = {}".format(indent*3, data['S_f']))
+
+        # # print higher orders:
+        # print("{}hbarFreqf to higher orders:".format(indent*2))
+        # print("{}order hbarFreqf(meV)".format(indent*3))
+        # for _result in data['hbarFreqf']:
+        #     _order = _result['order']
+        #     _freq = _result['hbarfreq']
+        #     print("{}{:5d} {}".format(indent*3, _order, _freq))
+
         save()
     else:
         print("\n{}Read frequencies from {}".format(indent, file_store))
