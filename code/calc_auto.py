@@ -37,12 +37,13 @@ def compute_frequency(sid, dinput, data):
     data[f'hbarFreq{sid}_to02_order'] = list_result
 
     # print statements
-    print(f"{indent*3}hbarFreq{sid} = {data['hbarFreq{sid}']}"
-    print(f"{indent*3}S_{sid} = {data['S_{sid}']}"
-    print(f"{indent*2}hbarFreq{sid} to higher orders:"
-    print(f"{indent*3}order hbarFreq{sid}(meV)"
-    for _result in data['hbarFreq{sid}']:
-        print(f"{indent*3}{result['order']:5d} {result['hbarfreq']}")
+    print(f"{indent*3}hbarFreq{sid} = {freq * 1000}")
+    print(f"{indent*3}S_{sid} = {S}")
+    print(f"{indent*2}hbarFreq{sid} to higher orders:")
+    print(f"{indent*3}order hbarFreq{sid}(meV)")
+    for result in data[f'hbarFreq{sid}_to02_order']:
+        order, hbarfreq = result.values()
+        print(f"{indent*3}{order:5d} {hbarfreq*1000}")
 
 
 def main():
