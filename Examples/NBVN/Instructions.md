@@ -1,6 +1,8 @@
 Nonradiative lifetime of NBVN (in-plane) 6x6 h-BN
 ===========
 
+Warning!! This tutorial is not up-to-date as of 11/2/20, contact tjsmart@ucsc.edu for help
+
 Follow along on kairay! :)
 
 1. Obtain relaxed geometry of the ground state (a normal QE relax) and that of the excited state (QE relax with constrained occupations wherein a state which is occupied in the ground state has occupation 0, and a state which is unoccupied in the ground state set to 1, to simulate an excited state).

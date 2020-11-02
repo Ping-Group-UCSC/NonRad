@@ -1,6 +1,8 @@
 Intersystem crossing (isc) rate of NV- center in Diamond
 ===========
 
+Warning!! This tutorial is not up-to-date as of 11/2/20, contact tjsmart@ucsc.edu for help
+
 1. Obtain relaxed geometry of the triplet excited state (`relax-cdftdn1/`).
 
 2. Obtain relaxed geometry of the singlet ground state (`relax-s0/`).
