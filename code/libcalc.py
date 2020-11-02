@@ -7,6 +7,7 @@ from numpy.linalg import norm
 from constant import Ry2eV, Electron2Coulomb, Ang2m, AMU2kg, hbar_eVs, hbar_Js, AMU2me, Ang2Bohr, Ha2eV, Kelvin2au, \
     Bohr2m, Bohr2Ang, second2au, GHz2Ha
 import glob
+import warnings
 
 from chem_utils import f_Element_Symbol_to_Mass
 from libreadqe import read_pos_and_etot_ratio, read_wave, get_ratio_folder, read_eig, get_save_folder
@@ -81,7 +82,6 @@ def calc_freq(folder, ratio_min, ratio_max, dQ):
 
     raises AssertionError if minimum is not at 0 or 1
     '''
-    import warnings
     # ignore warning by polyfit
     warnings.filterwarnings("ignore", message="Polyfit may be poorly conditioned")
 
@@ -132,8 +132,10 @@ def calc_freq(folder, ratio_min, ratio_max, dQ):
     ar_ratio = np.asarray([x["ratio"] for x in list_data])
     ar_etot = np.asarray([x["etot"] for x in list_data])
 
-    # ar_ratio_min = ar_ratio[np.argmin(ar_etot)]
-    # min_at_0_or_1 = np.any(np.isclose(ar_ratio_min, [0, 1], atol=tol))
+    ar_ratio_min = ar_ratio[np.argmin(ar_etot)]
+    min_at_0_or_1 = np.any(np.isclose(ar_ratio_min, [0, 1], atol=tol))
+    if min_at_0_or_1:
+        warnings.warn("Minimum is not at ratio = 0 or 1, true min at: %f" % ar_ratio_min)
     # assert min_at_0_or_1, "Minimum must be at ratio = 0 or 1, true min at: %f" % ar_ratio_min
 
 # Fit with different orders
