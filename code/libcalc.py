@@ -134,7 +134,7 @@ def calc_freq(folder, ratio_min, ratio_max, dQ):
 
     ar_ratio_min = ar_ratio[np.argmin(ar_etot)]
     min_at_0_or_1 = np.any(np.isclose(ar_ratio_min, [0, 1], atol=tol))
-    if min_at_0_or_1:
+    if not min_at_0_or_1:
         warnings.warn("Minimum is not at ratio = 0 or 1, true min at: %f" % ar_ratio_min)
     # assert min_at_0_or_1, "Minimum must be at ratio = 0 or 1, true min at: %f" % ar_ratio_min
 
