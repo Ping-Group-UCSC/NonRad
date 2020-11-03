@@ -367,9 +367,17 @@ def calc_wif(dir_i, dir_f, ix_defect, ix_bandmin, ix_bandmax, dQ, de=None, spinn
     list_wif = []
     for iband, ar0 in dic_band_overlap.items():
         # Only fit first several
-        # print(ar0)
+
+        # find index with ratio = 0
+        index0 = np.argwhere(np.isclose(ar0[:, 0], 0, atol=1e-6)).flatten()
+        assert len(index0) == 1, "Should be 1 and only one index with ratio 0"
+        index0 = index0[0]
+
+        # convert to Q
         ar_Q = ar0[:, 0] * dQ
-        ar_overlap = ar0[:, 1]
+
+        # only use a few begginning where ratio=0
+        ar_overlap = ar0[index0:, 1]
         nq = 3
 #       print("Fitting %i points: Q=[%.3f, %.3f]" % (nq, ar_Q[0], ar_Q[nq-1]))
         p = np.polyfit(ar_Q[:nq], ar_overlap[:nq],  deg=1)
