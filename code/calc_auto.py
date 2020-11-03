@@ -179,7 +179,7 @@ def main():
     if ("dQ" not in data and "folder_init_state" in dinput):
         print("\n{}Compute dQ".format(indent))
         (vecR, list_pos_f), package = read_cell_and_pos_auto(dinput['folder_final_state'] + "/ratio-0.0000/scf")
-        (vecR, list_pos_i), package = read_cell_and_pos_auto(dinput['folder_final_state'] + "/ratio-1.0000/scf")
+        (vecR, list_pos_i), package = read_cell_and_pos_auto(dinput['folder_init_state'] + "/ratio-1.0000/scf")
         dQ, M, ar_delta, ar_Qi = calc_dQ(vecR, list_pos_f, list_pos_i)
         data['dQ'] = dQ
         data['M'] = M
