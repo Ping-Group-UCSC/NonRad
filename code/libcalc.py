@@ -304,6 +304,12 @@ def calc_wif(dir_i, dir_f, ix_defect, ix_bandmin, ix_bandmax, dQ, de=None, spinn
         for data in list_data:
             ratio = data["ratio"]
             folder = get_save_folder(os.path.join(dir0, get_ratio_folder(ratio)))
+            if folder is None:
+                print("Unable to read from ratio folder!!! printing error information")
+                print(f"ratio = {ratio}")
+                print(f"dir0 = {dir0}")
+                print(f"ratio_folder = {get_ratio_folder(ratio)}")
+                raise ValueError("Unable to get ratio folder")
             ar_eig1 = read_eig(folder)
 
             for spin in (1, 2):
