@@ -75,6 +75,19 @@ def calc_dE(dir1):
         return abs(etot1 - etot2)
 
 
+def calc_fit_r_squared(poly, X, Y):
+    '''
+    Calculate the r squared value of polynomial fit 'poly' based on X and Y
+    '''
+    order = len(poly) - 1
+    fit_Y = np.sum([p * X**(order-i) for i, p in enumerate(poly)], axis=0)
+    residuals = Y - fit_Y
+    ss_res = np.sum(residuals**2)
+    ss_tot = np.sum((Y - np.mean(Y))**2)
+    r_squared = 1 - (ss_res / ss_tot)
+    return r_squared
+
+
 def calc_freq(folder, ratio_min, ratio_max, dQ):
     '''
     Fit the effective 1D frequency from scf total energy and Q
@@ -144,12 +157,13 @@ def calc_freq(folder, ratio_min, ratio_max, dQ):
     list_result = []
     for order in range(2, min(5, len(list_data)+1)):
         p = np.polyfit(ar_ratio, ar_etot, deg=order)
+        r_squared = calc_fit_r_squared(p, ar_ratio, ar_etot)
         try:
             hfreq = 1/dQ * sqrt(p[order-2] * 2 * Electron2Coulomb / (Ang2m**2 * AMU2kg)) * hbar_eVs
         except ValueError:
             hfreq = 0
 
-        list_result.append({"order": order, "hbarfreq": hfreq})
+        list_result.append({"order": order, "hbarfreq": hfreq, "r_squared": r_squared})
 # Return order 2 as final result and
 # estimate error
 

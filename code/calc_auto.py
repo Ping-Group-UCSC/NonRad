@@ -40,10 +40,10 @@ def compute_frequency(sid, dinput, data):
     print(f"{indent*3}hbarFreq{sid} = {freq * 1000}")
     print(f"{indent*3}S_{sid} = {S}")
     print(f"{indent*2}hbarFreq{sid} to higher orders:")
-    print(f"{indent*3}order hbarFreq{sid}(meV)")
+    print(f"{indent*3}order   hbarFreq{sid}(meV)  R^2")
     for result in data[f'hbarFreq{sid}_to02_order']:
-        order, hbarfreq = result.values()
-        print(f"{indent*3}{order:5d} {hbarfreq*1000}")
+        order, hbarfreq, r_squared = result.values()
+        print(f"{indent*3}{order:5d}  {hbarfreq*1000:15.8e}  {r_squared:.4f}")
 
 
 def main():
