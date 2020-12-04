@@ -5,10 +5,6 @@ import matplotlib.pyplot as plt
 import pw2py as pw
 import glob
 import scipy.constants
-import warnings
-
-
-warnings.warn("This script is not tested and may be wrong!!!")
 
 
 # constants for conversions
@@ -23,7 +19,8 @@ def read_full_dat() -> dict:
     for lin in sorted(glob.glob('lin*/')):
         full_dat[lin] = []
         for rat in sorted(glob.glob(f'{lin}ratio-*/')):
-            ratio = float(rat.split('-')[-1][:-1])
+            rloc = rat.find('ratio-')
+            ratio = float(rat[rloc+len('ratio-'):-1])
             energy = pw.qeout.final_energy(f'{rat}scf.out')[0]
             full_dat[lin].append([ratio, energy])
         full_dat[lin] = np.array(full_dat[lin])
@@ -44,7 +41,8 @@ def calc_zpl(full_dat: dict, report=False) -> dict:
     for lin, dat in full_dat.items():
         zpl[lin] = (dat[np.argmin(dat[:, 1]), 0], dat[:, 1].min())
         if report:
-            print(f'{lin} -> min = {zpl[lin][1]:.4f} at ratio = {zpl[lin][0]:.4f}')
+            print(
+                f'{lin} -> min = {zpl[lin][1]:.4f} at ratio = {zpl[lin][0]:.4f}')
     return zpl
 
 
@@ -76,7 +74,7 @@ def calc_hw_and_S(polyfit: dict, dQ: float, report=False) -> tuple:
     hw, S = {}, {}
     for lin, fit in polyfit.items():
         # hbar omega in eV
-        hw[lin] = hbar * (fit[0] * eV2J / (dQ_SI**2))**(1/2)
+        hw[lin] = hbar * (fit[0] * 2 * eV2J / (dQ_SI**2))**(1/2)
         # HR factor (unitless)
         S[lin] = hw[lin] * (dQ_SI**2) / hbar**2 / 2 / eV2J
         if report:
