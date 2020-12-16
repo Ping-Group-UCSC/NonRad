@@ -82,30 +82,35 @@ def read_pos_and_etot_ratio(folder=None):
     return list_data, vecR
 
 
-def read_eig(folder):
+def read_eig_61(folder):
     '''
-    Read eigenvalues from save folder
+    Read eigenvalues from save folder in qe-6.1
 
     :return: Array in ik, ispin, ib, 1/2 (for eigenvalues and occupations numbers)
     '''
     t1 = ET.parse(os.path.join(folder, "data-file.xml")).getroot()
     nk = int(t1.find("BRILLOUIN_ZONE/NUMBER_OF_K-POINTS").text)
-    list_spin = [".1", ".2"] if t1.find("SPIN/LSDA").text.strip() == "T" else [""]
+    list_spin = [".1", ".2"] if t1.find(
+        "SPIN/LSDA").text.strip() == "T" else [""]
     # list_data = []
     ar = None
     for ik in range(1, nk+1):
         for ispin, stspin in enumerate(list_spin):
-            filename = t1.find("EIGENVALUES/K-POINT.%i/DATAFILE%s" % (ik, stspin)).attrib["iotk_link"]
+            filename = t1.find("EIGENVALUES/K-POINT.%i/DATAFILE%s" %
+                               (ik, stspin)).attrib["iotk_link"]
             t2 = ET.parse(os.path.join(folder, filename)).getroot()
-            data = np.asarray([float(x) for x in t2.find("EIGENVALUES").text.split()])
-            occ = np.asarray([float(x) for x in t2.find("OCCUPATIONS").text.split()])
+            data = np.asarray([float(x)
+                               for x in t2.find("EIGENVALUES").text.split()])
+            occ = np.asarray([float(x)
+                              for x in t2.find("OCCUPATIONS").text.split()])
             unit = t2.find("UNITS_FOR_ENERGIES").attrib["UNITS"]
             if (unit == "Hartree"):
                 data = data * Ha2eV
             else:
                 raise ValueError("Unkown unit")
             if (ar is None):
-                ar = np.zeros((nk, len(list_spin), len(data), 2), dtype=np.float64)
+                ar = np.zeros((nk, len(list_spin), len(data), 2),
+                              dtype=np.float64)
             ar[ik-1, ispin, :, 0] = data
             ar[ik-1, ispin, :, 1] = occ
 
@@ -127,9 +132,9 @@ def parse_attribute(st):
     return dict(l1)
 
 
-def read_wave(prefix, ispin, ik, ib):
+def read_wave_61(prefix, ispin, ik, ib):
     '''
-    Read wavefunction
+    Read wavefunction from qe-6.1
     '''
     folder = os.path.join(prefix, "K%05i" % ik)
     if (not os.path.exists(folder)):
@@ -194,3 +199,120 @@ def read_wave(prefix, ispin, ik, ib):
         evc = data.view(dtype=dt)
 
     return evc
+
+
+def read_wave_66(prefix, ispin, ik, ib):
+    '''
+    Read wavefunction from qe-6.6 (dat format, not hdf5)
+
+    WARNING!!! This should only be used for reading kp=(0, 0, 0), others are not tested
+
+    WARNING!!! gamma_only is not implemented (should read real wfc instead of complex)
+
+    WARNING!!! npol != 1 is not implemented (e.g. noncollinear case)
+    '''
+    sspin = 'up' if ispin == 1 else 'dn'
+    filename = os.path.join(prefix, f'wfc{sspin}{ik}.dat')
+    with open(filename, 'rb') as f:
+        with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as buffer:
+            # ik_ = np.frombuffer(buffer.read(4), dtype=np.int32)[0]
+            # xk = np.frombuffer(buffer.read(24), dtype=np.float64)
+            # ispin = np.frombuffer(buffer.read(4), dtype=np.int32)[0]
+            # gamma_only = np.frombuffer(buffer.read(8), dtype=np.int64)[0]
+            # scalef = np.frombuffer(buffer.read(8), dtype=np.float64)[0]
+            # buffer.read(8)  # newline
+            # ---- uncomment above to read them but it may be wrong,
+            # ---- currently they are skipped
+            buffer.read(56)
+            # ------------------------------------------------------------
+
+            ngw, igwx_, npol, nbnd_ = \
+                np.frombuffer(buffer.read(16), dtype=np.int32)
+            # assert npol == 1, "npol != 1, not implemented"
+            buffer.read(8)  # newline
+            # ------------------------------------------------------------
+
+            # b = np.frombuffer(buffer.read(72), dtype=np.float64).reshape(3, 3)
+            # buffer.read(8)  # newline
+            # ---- uncomment above to read bvecs
+            buffer.read(80)
+            # ------------------------------------------------------------
+
+            # read gvecs
+            gksize = 12 * igwx_  # 3 * int32 = 12 bytes
+            gk = np.frombuffer(buffer.read(gksize), dtype=np.int32)
+            gk = gk.reshape(gk.size//3, 3)
+            buffer.read(8)  # newline
+            # ------------------------------------------------------------
+
+            # read wfc
+            wfc = []
+            wtmpsize = 16 * igwx_  # complex128 = 16 bytes
+            for i in range(nbnd_):
+                wtmp = np.frombuffer(buffer.read(wtmpsize), dtype=np.complex128)  # noqa
+                wfc.append(wtmp)
+                buffer.read(8)  # newline
+            wfc = np.array(wfc, dtype=np.complex128)
+
+    # return gk, wfc
+    return wfc[ib]
+
+
+def read_eig_66(folder):
+    '''
+    Read eigenvalues from save folder in qe-6.6
+
+    :return: Array in ik, ispin, ib, 1/2 (for eigenvalues and occupations numbers)
+    '''
+    root = ET.parse(os.path.join(folder, "data-file-schema.xml")).getroot()
+    band_child = root.find('output').find('band_structure')
+    lsda = band_child.find('lsda').text == 'true'
+    nspin = 2 if lsda else 1
+    bnd_str = 'nbnd_up' if lsda else 'nbnd'
+    nbnd = int(band_child.find(bnd_str).text)
+    nk = int(band_child.find('nks').text)
+    eig, occ = [], []
+    for ks_child in band_child.findall('ks_energies'):
+        keig = np.fromstring(ks_child.find('eigenvalues').text, sep=' ')
+        kocc = np.fromstring(ks_child.find('occupations').text, sep=' ')
+        eig.append(keig.reshape(nspin, nbnd))
+        occ.append(kocc.reshape(nspin, nbnd))
+    ar = np.zeros((nk, nspin, nbnd, 2), dtype=np.float64)
+    ar[:, :, :, 0] = eig
+    ar[:, :, :, 1] = occ
+    return ar
+
+
+def read_eig(folder):
+    '''
+    check for 6.1 or 6.6 style folder than call read_eig_61 or read_eig_66
+    see read_eig_61 and read_eig_66 for more details
+    '''
+    file61 = os.path.join(folder, 'data-file.xml')
+    file66 = os.path.join(folder, 'data-file-schema.xml')
+    if os.path.exists(file61):
+        return read_eig_61(folder)
+    elif os.path.exists(file66):
+        return read_eig_66(folder)
+    else:
+        raise ValueError(
+            f"Unable to locate an xml data file in folder: {folder}")
+
+
+def read_wave(prefix, ispin, ik, ib):
+    '''
+    check for 6.1 or 6.6 style folder than call read_wave_61 or read_wave_66
+    see read_wave_61 and read_wave_66 for more details
+    '''
+    file61_nospin = os.path.join(prefix, "K%05i" % ik, "evc.dat")
+    file61 = os.path.join(prefix, "K%05i" % ik, "evc%i.dat" % ispin)
+    file66_nospin = os.path.join(prefix, f'wfc{ik}.dat')
+    sspin = 'up' if ispin == 1 else 'dn'
+    file66 = os.path.join(prefix, f'wfc{sspin}{ik}.dat')
+    if os.path.exists(file61_nospin) or os.path.exists(file61):
+        read_wave_61(prefix, ispin, ik, ib)
+    elif os.path.exists(file66_nospin) or os.path.exists(file66):
+        read_wave_66(prefix, ispin, ik, ib)
+    else:
+        raise ValueError(
+            f"Unable to locate a wfc file in folder: {prefix}")
