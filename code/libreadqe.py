@@ -211,51 +211,22 @@ def read_wave_66(prefix, ispin, ik, ib):
 
     WARNING!!! npol != 1 is not implemented (e.g. noncollinear case)
     '''
-    sspin = 'up' if ispin == 1 else 'dn'
+    sspin = 'up' if ispin == 1 else 'dw'
     filename = os.path.join(prefix, f'wfc{sspin}{ik}.dat')
     with open(filename, 'rb') as f:
         with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as buffer:
-            # ik_ = np.frombuffer(buffer.read(4), dtype=np.int32)[0]
-            # xk = np.frombuffer(buffer.read(24), dtype=np.float64)
-            # ispin = np.frombuffer(buffer.read(4), dtype=np.int32)[0]
-            # gamma_only = np.frombuffer(buffer.read(8), dtype=np.int64)[0]
-            # scalef = np.frombuffer(buffer.read(8), dtype=np.float64)[0]
-            # buffer.read(8)  # newline
-            # ---- uncomment above to read them but it may be wrong,
-            # ---- currently they are skipped
-            buffer.read(56)
             # ------------------------------------------------------------
-
+            buffer.seek(56)
             ngw, igwx_, npol, nbnd_ = \
                 np.frombuffer(buffer.read(16), dtype=np.int32)
-            # assert npol == 1, "npol != 1, not implemented"
-            buffer.read(8)  # newline
             # ------------------------------------------------------------
-
-            # b = np.frombuffer(buffer.read(72), dtype=np.float64).reshape(3, 3)
-            # buffer.read(8)  # newline
-            # ---- uncomment above to read bvecs
-            buffer.read(80)
+            gksize = 12 * igwx_  # 3*int32 = 12 bytes
+            seek = 56 + 16 + 8 + 80 + gksize + 8
+            wfcsize = 16 * igwx_  # complex128 = 16 bytes
+            seek += wfcsize * ib
+            buffer.seek(seek)
             # ------------------------------------------------------------
-
-            # read gvecs
-            gksize = 12 * igwx_  # 3 * int32 = 12 bytes
-            gk = np.frombuffer(buffer.read(gksize), dtype=np.int32)
-            gk = gk.reshape(gk.size//3, 3)
-            buffer.read(8)  # newline
-            # ------------------------------------------------------------
-
-            # read wfc
-            wfc = []
-            wtmpsize = 16 * igwx_  # complex128 = 16 bytes
-            for i in range(nbnd_):
-                wtmp = np.frombuffer(buffer.read(wtmpsize), dtype=np.complex128)  # noqa
-                wfc.append(wtmp)
-                buffer.read(8)  # newline
-            wfc = np.array(wfc, dtype=np.complex128)
-
-    # return gk, wfc
-    return wfc[ib]
+            return np.frombuffer(buffer.read(wfcsize), dtype=np.complex128)
 
 
 def read_eig_66(folder):
@@ -273,7 +244,7 @@ def read_eig_66(folder):
     nk = int(band_child.find('nks').text)
     eig, occ = [], []
     for ks_child in band_child.findall('ks_energies'):
-        keig = np.fromstring(ks_child.find('eigenvalues').text, sep=' ')
+        keig = np.fromstring(ks_child.find('eigenvalues').text, sep=' ') * Ha2eV
         kocc = np.fromstring(ks_child.find('occupations').text, sep=' ')
         eig.append(keig.reshape(nspin, nbnd))
         occ.append(kocc.reshape(nspin, nbnd))
@@ -307,12 +278,12 @@ def read_wave(prefix, ispin, ik, ib):
     file61_nospin = os.path.join(prefix, "K%05i" % ik, "evc.dat")
     file61 = os.path.join(prefix, "K%05i" % ik, "evc%i.dat" % ispin)
     file66_nospin = os.path.join(prefix, f'wfc{ik}.dat')
-    sspin = 'up' if ispin == 1 else 'dn'
+    sspin = 'up' if ispin == 1 else 'dw'
     file66 = os.path.join(prefix, f'wfc{sspin}{ik}.dat')
     if os.path.exists(file61_nospin) or os.path.exists(file61):
-        read_wave_61(prefix, ispin, ik, ib)
+        return read_wave_61(prefix, ispin, ik, ib)
     elif os.path.exists(file66_nospin) or os.path.exists(file66):
-        read_wave_66(prefix, ispin, ik, ib)
+        return read_wave_66(prefix, ispin, ik, ib)
     else:
         raise ValueError(
             f"Unable to locate a wfc file in folder: {prefix}")
