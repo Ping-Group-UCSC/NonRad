@@ -223,7 +223,7 @@ def read_wave_66(prefix, ispin, ik, ib):
             gksize = 12 * igwx_  # 3*int32 = 12 bytes
             seek = 56 + 16 + 8 + 80 + gksize + 8
             wfcsize = 16 * igwx_  # complex128 = 16 bytes
-            seek += wfcsize * ib
+            seek += (wfcsize + 8) * ib
             buffer.seek(seek)
             # ------------------------------------------------------------
             return np.frombuffer(buffer.read(wfcsize), dtype=np.complex128)
