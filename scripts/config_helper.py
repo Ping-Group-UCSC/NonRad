@@ -2,9 +2,11 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 import pw2py as pw
 import glob
 import scipy.constants
+from typing import Union, List
 
 
 # constants for conversions
@@ -46,7 +48,7 @@ def calc_zpl(full_dat: dict, report=False) -> dict:
     return zpl
 
 
-def calc_dQ(full_dat: dict, report=False) -> float:
+def calc_dQ(full_dat: dict, zpl: dict, report=False) -> float:
     ''' calculate dQ from atomic geometry of minimum (units of amu^1/2 Ang) '''
     lins = list(full_dat.keys())
     geo0 = pw.atomgeo.from_file(
@@ -59,7 +61,7 @@ def calc_dQ(full_dat: dict, report=False) -> float:
     return dQ
 
 
-def calc_polyfit(full_dat: dict) -> dict:
+def calc_polyfit(full_dat: dict, zpl: dict) -> dict:
     ''' calculate degree 2 polynomial fit around the minimum '''
     polyfit = {}
     for lin, dat in full_dat.items():
@@ -68,7 +70,7 @@ def calc_polyfit(full_dat: dict) -> dict:
     return polyfit
 
 
-def calc_hw_and_S(polyfit: dict, dQ: float, report=False) -> tuple:
+def calc_hw_and_S(polyfit: dict, zpl: dict, dQ: float, report=False) -> tuple:
     ''' calculate hbar*omega (hw) in eV and the Huang-Rhys factor (S) '''
     dQ_SI = dQ * (atomic_mass)**(1/2) * 1e-10
     hw, S = {}, {}
@@ -82,10 +84,16 @@ def calc_hw_and_S(polyfit: dict, dQ: float, report=False) -> tuple:
     return hw, S
 
 
-def make_plot(full_dat: dict, polyfit: dict, zpl: dict, dQ: float, filename: str = 'config.png'):
+def make_plot(full_dat: dict,
+              polyfit: dict,
+              zpl: dict,
+              dQ: float,
+              filename: str = 'config.png',
+              return_ax: bool = False,
+              xlim: Union[List[float], None] = None) -> Union[None, Axes]:
     ''' make configuration plot '''
     plt.figure(dpi=300, figsize=(4, 4))
-    xlim = np.array([-0.5, 1.5])
+    xlim = np.array([-0.5, 1.5]) if xlim is None else np.array(xlim)
     colors = {k: c for k, c in zip(full_dat, ['red', 'blue'])}
 
     # plot scatter data
@@ -95,7 +103,7 @@ def make_plot(full_dat: dict, polyfit: dict, zpl: dict, dQ: float, filename: str
         plt.scatter(qvals, yvals, color=colors[lin])
     # plot fit lines
     for lin, fit in polyfit.items():
-        qvals = np.linspace(-0.5, 1.5)
+        qvals = np.linspace(*xlim)
         yvals = fit[0] * qvals**2 + fit[1] * qvals + fit[2]
         qvals *= dQ
         plt.plot(qvals, yvals, color=colors[lin])
@@ -116,6 +124,8 @@ def make_plot(full_dat: dict, polyfit: dict, zpl: dict, dQ: float, filename: str
     plt.hlines((z0[1], z1[1]), *(xlim*dQ), **kwargs)
     plt.vlines((z0[0]*dQ, z1[0]*dQ), *(ylim), **kwargs)
 
+    if return_ax:
+        return ax
     # save fig
     plt.tight_layout()
     plt.savefig('config.png')
@@ -125,7 +135,7 @@ def make_plot(full_dat: dict, polyfit: dict, zpl: dict, dQ: float, filename: str
 if __name__ == '__main__':
     full_dat = read_full_dat()
     zpl = calc_zpl(full_dat, report=True)
-    dQ = calc_dQ(full_dat, report=True)
-    polyfit = calc_polyfit(full_dat)
-    hw, S = calc_hw_and_S(polyfit, dQ, report=True)
+    dQ = calc_dQ(full_dat, zpl, report=True)
+    polyfit = calc_polyfit(full_dat, zpl)
+    hw, S = calc_hw_and_S(polyfit, zpl, dQ, report=True)
     make_plot(full_dat, polyfit, zpl, dQ)
