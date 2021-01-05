@@ -85,7 +85,8 @@ def calc_fit_r_squared(poly, X, Y):
     ss_res = np.sum(residuals**2)
     ss_tot = np.sum((Y - np.mean(Y))**2)
     r_squared = 1 - (ss_res / ss_tot)
-    return r_squared
+    # return float, becuase yaml freaks out about np.float64: https://stackoverflow.com/questions/40691311/save-results-in-yaml-file-with-python
+    return float(r_squared)
 
 
 def calc_freq(folder, ratio_min, ratio_max, dQ):
