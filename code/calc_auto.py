@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from __future__ import print_function
 
@@ -17,6 +17,33 @@ from datetime import datetime
 from constant import indent
 
 np.seterr(all="log")
+
+
+def compute_frequency(sid, dinput, data):
+    '''
+    sid should be 'i' or 'f' for initial or final
+    '''
+    assert sid in ['i', 'f'], "s should be 'i' or 'f' for initial or final"
+    lid = 'init' if sid == 'i' else 'final'
+    # computing final frequency
+    r1 = dinput[f'ratio_{lid}_min']
+    r2 = dinput[f'ratio_{lid}_max']
+    freq, freq_error, list_result, S = calc_freq(
+        dinput[f'folder_{lid}_state'], ratio_min=r1, ratio_max=r2, dQ=data['dQ'])
+    data[f'hbarFreq{sid}'] = freq * 1000
+    data[f'hbarFreq{sid}_error'] = freq_error * 1000
+    data[f'hbarFreq{sid}_order'] = list_result
+    data[f'S_{sid}'] = S
+    # data[f'hbarFreq{sid}_to02_order'] = list_result
+
+    # print statements
+    print(f"{indent*3}hbarFreq{sid} = {freq * 1000}")
+    print(f"{indent*3}S_{sid} = {S}")
+    print(f"{indent*2}hbarFreq{sid} to higher orders:")
+    print(f"{indent*3}order   hbarFreq{sid}(meV)  R^2")
+    for result in data[f'hbarFreq{sid}_order']:
+        order, hbarfreq, r_squared = result.values()
+        print(f"{indent*3}{order:5d}  {hbarfreq*1000:15.8e}  {r_squared:.4f}")
 
 
 def main():
@@ -152,7 +179,7 @@ def main():
     if ("dQ" not in data and "folder_init_state" in dinput):
         print("\n{}Compute dQ".format(indent))
         (vecR, list_pos_f), package = read_cell_and_pos_auto(dinput['folder_final_state'] + "/ratio-0.0000/scf")
-        (vecR, list_pos_i), package = read_cell_and_pos_auto(dinput['folder_final_state'] + "/ratio-1.0000/scf")
+        (vecR, list_pos_i), package = read_cell_and_pos_auto(dinput['folder_init_state'] + "/ratio-1.0000/scf")
         dQ, M, ar_delta, ar_Qi = calc_dQ(vecR, list_pos_f, list_pos_i)
         data['dQ'] = dQ
         data['M'] = M
@@ -193,59 +220,12 @@ def main():
     # Compute frequency
     if ("hbarFreqi" not in data):
         print("\n{}Computing frequency".format(indent))
-        # From 0-0.15 and 0-0.20
-
-        # computing initial frequency
-        r1 = dinput['ratio_init']
-        r2 = abs(r1 - 0.15)
-        if (r1 > r2):
-            r1, r2 = (r2, r1)
-        freq, freq_error, list_result, S = calc_freq(
-            dinput['folder_init_state'], ratio_min=r1, ratio_max=r2, dQ=data['dQ'])
-        data['hbarFreqi'] = freq * 1000
-        data['hbarFreqi_error'] = freq_error * 1000
-        data['hbarFreqi_order'] = list_result
-        data['S_i'] = S
-        print("{}hbarFreqi = {}".format(indent*3, data['hbarFreqi']))
-        print("{}S_i = {}".format(indent*3, data['S_i']))
-
-        # computing final frequency
-        r1 = dinput['ratio_final']
-        r2 = abs(r1 - 0.15)
-        if (r1 > r2):
-            r1, r2 = (r2, r1)
-        freq, freq_error, list_result, S = calc_freq(
-            dinput['folder_final_state'], ratio_min=r1, ratio_max=r2, dQ=data['dQ'])
-        data['hbarFreqf'] = freq * 1000
-        data['hbarFreqf_error'] = freq_error * 1000
-        data['hbarFreqf_order'] = list_result
-        data['S_f'] = S
-        print("{}hbarFreqf = {}".format(indent*3, data['hbarFreqf']))
-        print("{}S_f = {}".format(indent*3, data['S_f']))
+        # i(nitial) and f(inal)
+        compute_frequency('i', dinput, data)
+        compute_frequency('f', dinput, data)
         save()
     else:
         print("\n{}Read frequencies from {}".format(indent, file_store))
-
-    if ("hbarFreqi_to02_order" not in data):
-        print("\n{}Computing frequency to higher orders".format(indent))
-        r1 = dinput['ratio_init']
-        r2 = abs(r1 - 0.20)
-        if (r1 > r2):
-            r1, r2 = (r2, r1)
-        freq, freq_error, list_result, S = calc_freq(
-            dinput['folder_init_state'], ratio_min=r1, ratio_max=r2, dQ=data['dQ'])
-        data['hbarFreqi_to02_order'] = list_result
-
-        r1 = dinput['ratio_final']
-        r2 = abs(r1 - 0.20)
-        if (r1 > r2):
-            r1, r2 = (r2, r1)
-        freq, freq_error, list_result, S = calc_freq(
-            dinput['folder_final_state'], ratio_min=r1, ratio_max=r2, dQ=data['dQ'])
-        data['hbarFreqf_to02_order'] = list_result
-        # print("{}hbarFreq_to02_order (i,f) = ({}, {})".format(
-        #     indent*2, data['hbarFreqi_to02_order'], data['hbarFreqf_to02_order']))
-        save()
 
     if dinput['job'] == 'nonrad':
         if ("Wif" not in data or "WifBand" not in data):

@@ -1,10 +1,15 @@
 bulkband_index: The bulk band indicies in format [min,max], start from 1
-dE: The energy difference between two states (charge transition level) as initial - final
 defectband_index: The defect band index
+defectband_spin: The spin of the defect state can be "up" or "down"
+dE: The energy difference between two states (charge transition level or ZPL) as initial - final
 dimension: The periodical dimension of the system, can be "xyz" (3D) or "xy" (2D)
 folder_final_state: The folder name of scf calculation (ratio*) with final state charge
 folder_init_state: The folder name of scf calculation (ratio*) with initial state charge
 g: The degeneracy factor of sites, mostly 1
-ratio_final: The number to represent the final state equalibrium geometry in ratio*, should be 0 or 1
-ratio_init: The number to represent the initial state equalibrium geometry in ratio*, should be 0 or 1
-title: Nonradiative
+temperature: A list of temperatures to compute the lifetime at
+ratio_final_min: The minimum ratio to be used in the quadratic fitting of the final state
+ratio_final_max: The maximum ratio to be used in the quadratic fitting of the final state
+ratio_init_min: The minimum ratio to be used in the quadratic fitting of the initial state
+ratio_init_max: The maximum ratio to be used in the quadratic fitting of the initial state
+title: Can be whatever you like, not used in the code
+job: Can be 'nonrad' or 'isc'

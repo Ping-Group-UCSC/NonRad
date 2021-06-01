@@ -73,7 +73,7 @@ def read_cell_and_pos_qe(prefix):
                 break
             for line2 in lines[i+1:i+nat+1]:
                 ar = line2.strip().split()
-                pos = np.asarray([float(x) for x in ar[1:]])
+                pos = np.asarray([float(x) for x in ar[1:4]])
                 list_pos.append(
                     {"species": ''.join(filter(lambda x: x.isalpha(), ar[0])), "pos": pos, "speciesfull": ar[0]})
 
@@ -132,7 +132,7 @@ def read_cell_and_pos_qe(prefix):
                 if (line.startswith("End")):
                     break
                 ar = line.split()
-                pos = np.asarray([float(x) for x in ar[1:]])
+                pos = np.asarray([float(x) for x in ar[1:4]])
                 if (unit_coord == "crystal"):
                     pass
                 elif (unit_coord == "angstrom"):

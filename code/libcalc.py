@@ -7,6 +7,7 @@ from numpy.linalg import norm
 from constant import Ry2eV, Electron2Coulomb, Ang2m, AMU2kg, hbar_eVs, hbar_Js, AMU2me, Ang2Bohr, Ha2eV, Kelvin2au, \
     Bohr2m, Bohr2Ang, second2au, GHz2Ha
 import glob
+import warnings
 
 from chem_utils import f_Element_Symbol_to_Mass
 from libreadqe import read_pos_and_etot_ratio, read_wave, get_ratio_folder, read_eig, get_save_folder
@@ -74,12 +75,27 @@ def calc_dE(dir1):
         return abs(etot1 - etot2)
 
 
+def calc_fit_r_squared(poly, X, Y):
+    '''
+    Calculate the r squared value of polynomial fit 'poly' based on X and Y
+    '''
+    order = len(poly) - 1
+    fit_Y = np.sum([p * X**(order-i) for i, p in enumerate(poly)], axis=0)
+    residuals = Y - fit_Y
+    ss_res = np.sum(residuals**2)
+    ss_tot = np.sum((Y - np.mean(Y))**2)
+    r_squared = 1 - (ss_res / ss_tot)
+    # return float, becuase yaml freaks out about np.float64: https://stackoverflow.com/questions/40691311/save-results-in-yaml-file-with-python
+    return float(r_squared)
+
+
 def calc_freq(folder, ratio_min, ratio_max, dQ):
     '''
     Fit the effective 1D frequency from scf total energy and Q
-    Data are selected from ratio_min to ratio_max; it is assumed near a minimum
+    Data are selected from ratio_min to ratio_max
+
+    raises AssertionError if minimum is not at 0 or 1
     '''
-    import warnings
     # ignore warning by polyfit
     warnings.filterwarnings("ignore", message="Polyfit may be poorly conditioned")
 
@@ -130,17 +146,11 @@ def calc_freq(folder, ratio_min, ratio_max, dQ):
     ar_ratio = np.asarray([x["ratio"] for x in list_data])
     ar_etot = np.asarray([x["etot"] for x in list_data])
 
-# Check if near the minimum (assume minimum near 0 or 1)
-    if (ratio_min-tol <= 0 and 0 <= ratio_max+tol):
-        x0 = 0
-    elif (ratio_min-tol <= 1 and 1 <= ratio_max+tol):
-        x0 = 1
-
-# Put assume minimum to 0
-    ar_ratio = np.abs(x0 - ar_ratio)
-
-    if (np.argmin(ar_etot) != np.argmin(ar_ratio)):
-        raise ValueError("Mininum is not near %f, stopped" % x0)
+    ar_ratio_min = ar_ratio[np.argmin(ar_etot)]
+    min_at_0_or_1 = np.any(np.isclose(ar_ratio_min, [0, 1], atol=tol))
+    if not min_at_0_or_1:
+        warnings.warn("Minimum is not at ratio = 0 or 1, true min at: %f" % ar_ratio_min)
+    # assert min_at_0_or_1, "Minimum must be at ratio = 0 or 1, true min at: %f" % ar_ratio_min
 
 # Fit with different orders
 # Maxmumly one order less than number of points
@@ -148,12 +158,13 @@ def calc_freq(folder, ratio_min, ratio_max, dQ):
     list_result = []
     for order in range(2, min(5, len(list_data)+1)):
         p = np.polyfit(ar_ratio, ar_etot, deg=order)
+        r_squared = calc_fit_r_squared(p, ar_ratio, ar_etot)
         try:
             hfreq = 1/dQ * sqrt(p[order-2] * 2 * Electron2Coulomb / (Ang2m**2 * AMU2kg)) * hbar_eVs
         except ValueError:
             hfreq = 0
 
-        list_result.append({"order": order, "hbarfreq": hfreq})
+        list_result.append({"order": order, "hbarfreq": hfreq, "r_squared": r_squared})
 # Return order 2 as final result and
 # estimate error
 
@@ -308,6 +319,12 @@ def calc_wif(dir_i, dir_f, ix_defect, ix_bandmin, ix_bandmax, dQ, de=None, spinn
         for data in list_data:
             ratio = data["ratio"]
             folder = get_save_folder(os.path.join(dir0, get_ratio_folder(ratio)))
+            if folder is None:
+                print("Unable to read from ratio folder!!! printing error information")
+                print(f"ratio = {ratio}")
+                print(f"dir0 = {dir0}")
+                print(f"ratio_folder = {get_ratio_folder(ratio)}")
+                raise ValueError("Unable to get ratio folder")
             ar_eig1 = read_eig(folder)
 
             for spin in (1, 2):
@@ -371,9 +388,17 @@ def calc_wif(dir_i, dir_f, ix_defect, ix_bandmin, ix_bandmax, dQ, de=None, spinn
     list_wif = []
     for iband, ar0 in dic_band_overlap.items():
         # Only fit first several
-        # print(ar0)
+
+        # find index with ratio = 0
+        index0 = np.argwhere(np.isclose(ar0[:, 0], 0, atol=1e-6)).flatten()
+        assert len(index0) == 1, "Should be 1 and only one index with ratio 0"
+        index0 = index0[0]
+
+        # convert to Q
         ar_Q = ar0[:, 0] * dQ
-        ar_overlap = ar0[:, 1]
+
+        # only use a few begginning where ratio=0
+        ar_overlap = ar0[index0:, 1]
         nq = 3
 #       print("Fitting %i points: Q=[%.3f, %.3f]" % (nq, ar_Q[0], ar_Q[nq-1]))
         p = np.polyfit(ar_Q[:nq], ar_overlap[:nq],  deg=1)
