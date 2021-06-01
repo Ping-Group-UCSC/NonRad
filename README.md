@@ -24,7 +24,5 @@ Try out the example calculations under the directory `./Examples/`
 
 Author(s)
 ------------------------------------
-This code was written by Feng Wu  
-Revised and released by Tyler J. Smart  
-Python3 implementation by Tyler J. Smart  
-SOC extension implemented by Tyler J. Smart  
+Feng Wu  
+Tyler J. Smart
