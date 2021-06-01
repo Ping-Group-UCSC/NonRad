@@ -1,0 +1,45 @@
+M: 12.347179801818037
+S_f: 1.82737382251319
+S_i: 1.9350417176593064
+dErelf: 0.08587681304379657
+dEreli: 0.15843106883039582
+dQ: 0.4634318505672413
+filename_Q_etot: tot_Q.png
+filename_Q_etot_f: tot_Q_f.txt
+filename_Q_etot_i: tot_Q_i.txt
+filename_lifetime: lifetime_T.txt
+filename_phonon_part: phonon_part.txt
+hbarFreqf: 71.13420217890697
+hbarFreqf_error: 14.983194597450108
+hbarFreqf_order:
+- hbarfreq: 0.07113420217890698
+  order: 2
+  r_squared: 0.9999999747818475
+- hbarfreq: 0.07129038502230647
+  order: 3
+  r_squared: 1.0
+- hbarfreq: 0.056307190424856365
+  order: 4
+  r_squared: 1.0
+hbarFreqi: 75.32539159354354
+hbarFreqi_error: 6027.358390959101
+hbarFreqi_order:
+- hbarfreq: 0.07532539159354354
+  order: 2
+  r_squared: 0.9999999994826264
+- hbarfreq: 0.07571461975904485
+  order: 3
+  r_squared: 1.0
+- hbarfreq: 6.102683782552645
+  order: 4
+  r_squared: 1.0
+lambda_t: 44.97
+order_x: 0
+phonon_part_T0_HR: 1.3740836492406265
+unit:
+  M: aMU
+  dQ: aMU^1/2 Ang
+  hbarFreqf: meV
+  hbarFreqf_error: meV
+  hbarFreqi: meV
+  hbarFreqi_error: meV

@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH --job-name=nonrad
+#SBATCH --output=qe.%j.out
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=16
+# SBATCH --time=24:00:00
+# SBATCH --dependency=afterany:45573
+
+module add intel/17.0.5.239 impi/2017
+MPICMD="mpirun -genv I_MPI_FABRICS shm:ofa -n $SLURM_NTASKS"
+PWDIR="/export/data/share/wufeng/programs-intel2017.5/qe-6.1-scal/bin"
+
+$MPICMD $PWDIR/pw.x -nk 2 -nd 1024 -inp scf.in > scf.out

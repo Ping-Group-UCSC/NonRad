@@ -1,0 +1,259 @@
+Beginning nonradiative code on 06/01/2021 at 13:44:13
+
+Input parsed as:
+    job : isc
+    folder_final_state : ../lin1/
+    folder_init_state : ../lin2/
+    dE : 0.5
+    temperature : [10, 50, 100, 300, 600]
+    g : 1
+    ratio_final_min : 0.0
+    ratio_final_max : 0.15
+    ratio_init_min : 0.85
+    ratio_init_max : 1.0
+    lambda_t : 44.97
+
+Calculating intersystem crossing rate
+
+    Compute dQ
+        dQ = 0.4634318505672413
+        M = 12.347179801818037
+
+    Generating Q-etot curves
+        Saving Q-etot data to tot_Q_i.txt
+        Saving Q-etot data to tot_Q_f.txt
+
+    Calculating dE
+        dErelf = 0.08587681304379657
+        dEreli = 0.15843106883039582
+
+    Computing frequency
+        Found: 4 points in folder ../lin2/ in range 0.85 ~ 1.00
+            hbarFreqi = 75.32539159354354
+            S_i = 1.9350417176593064
+        hbarFreqi to higher orders:
+            order   hbarFreqi(meV)  R^2
+                2   7.53253916e+01  1.0000
+                3   7.57146198e+01  1.0000
+                4   6.10268378e+03  1.0000
+        Found: 4 points in folder ../lin1/ in range 0.00 ~ 0.15
+            hbarFreqf = 71.13420217890697
+            S_f = 1.82737382251319
+        hbarFreqf to higher orders:
+            order   hbarFreqf(meV)  R^2
+                2   7.11342022e+01  1.0000
+                3   7.12903850e+01  1.0000
+                4   5.63071904e+01  1.0000
+
+    Calculating phonon wavefunction overlap Xif
+        atomic unit dQ :          37.390806423448
+        atomic unit freqi/f:       0.0027681573731949       0.0026141339869882
+
+        Temperature :  600 K ; Maximum initial state oscillator quantum number    6
+                          n   m   occupation     deltacoef      overlap
+            Contribution:   6  18   0.0001226268   1.112455e-05   0.0003428093
+            Contribution:   6  17   0.0001226268    0.006924166    0.001813387
+            Contribution:   6  16   0.0001226268      0.9033733    0.007758985
+            Contribution:   6  15   0.0001226268       24.70483     0.02617082
+            Contribution:   6  14   0.0001226268       141.6157     0.06678237
+            Contribution:   6  13   0.0001226268       170.1593      0.1200823
+            Contribution:   6  12   0.0001226268       42.85632      0.1316961
+            Contribution:   6  11   0.0001226268       2.262502     0.05785263
+            Contribution:   6  10   0.0001226268     0.02503675   0.0003020558
+            Contribution:   6   9   0.0001226268   5.807401e-05     0.07014005
+            Contribution:   5  17   0.0005263688   7.252502e-06   0.0001474696
+            Contribution:   5  16   0.0005263688    0.004949423   0.0008554682
+            Contribution:   5  15   0.0005263688      0.7080048    0.004061255
+            Contribution:   5  14   0.0005263688       21.22915     0.01544758
+            Contribution:   5  13   0.0005263688       133.4271     0.04554338
+            Contribution:   5  12   0.0005263688       175.7803     0.09855473
+            Contribution:   5  11   0.0005263688       48.54129      0.1414966
+            Contribution:   5  10   0.0005263688       2.809748      0.1062033
+            Contribution:   5   9   0.0005263688     0.03409088     0.01405413
+            Contribution:   5   8   0.0005263688   8.670096e-05     0.02925295
+            Contribution:   4  16    0.002259409   4.702592e-06   5.579017e-05
+            Contribution:   4  15    0.002259409     0.00351873   0.0003557114
+            Contribution:   4  14    0.002259409      0.5518861    0.001877386
+            Contribution:   4  13    0.002259409       18.14378    0.008062134
+            Contribution:   4  12    0.002259409        125.032     0.02743566
+            Contribution:   4  11    0.002259409       180.6047     0.07095455
+            Contribution:   4  10    0.002259409       54.68297      0.1297649
+            Contribution:   4   9    0.002259409       3.470483      0.1449671
+            Contribution:   4   8    0.002259409     0.04616817     0.06448231
+            Contribution:   4   7    0.002259409    0.000128739   0.0004787088
+            Contribution:   3  15    0.009698388   3.032712e-06   1.788345e-05
+            Contribution:   3  14    0.009698388    0.002488064   0.0001256725
+            Contribution:   3  13    0.009698388      0.4278652   0.0007393786
+            Contribution:   3  12    0.009698388       15.42294    0.003592725
+            Contribution:   3  11    0.009698388       116.5312     0.01412323
+            Contribution:   3  10    0.009698388       184.5578      0.0435121
+            Contribution:   3   9    0.009698388       61.26849     0.09978674
+            Contribution:   3   8    0.009698388       4.263408      0.1551163
+            Contribution:   3   7    0.009698388     0.06218583      0.1321446
+            Contribution:   3   6    0.009698388   0.0001901257     0.02639549
+            Contribution:   2  14      0.0416298   1.945222e-06   4.572007e-06
+            Contribution:   2  13      0.0416298    0.001749772   3.553248e-05
+            Contribution:   2  12      0.0416298      0.3299201   0.0002338566
+            Contribution:   2  11      0.0416298        13.0392    0.001290117
+            Contribution:   2  10      0.0416298       108.0209    0.005873525
+            Contribution:   2   9      0.0416298       187.5771     0.02155806
+            Contribution:   2   8      0.0416298       68.27575     0.06152707
+            Contribution:   2   7      0.0416298       5.209165      0.1285717
+            Contribution:   2   6      0.0416298     0.08330758      0.1753429
+            Contribution:   2   5      0.0416298   0.0002792646      0.1165914
+            Contribution:   1  13      0.1786936   1.240942e-06   8.324449e-07
+            Contribution:   1  12      0.1786936      0.0012239   7.184618e-06
+            Contribution:   1  11      0.1786936        0.25302   5.313344e-05
+            Contribution:   1  10      0.1786936       10.96425   0.0003343484
+            Contribution:   1   9      0.1786936       99.59047    0.001770841
+            Contribution:   1   8      0.1786936       189.6145     0.00776855
+            Contribution:   1   7      0.1786936       75.67285     0.02756448
+            Contribution:   1   6      0.1786936       6.330289     0.07625542
+            Contribution:   1   5      0.1786936      0.1109997      0.1546737
+            Contribution:   1   4      0.1786936   0.0004079765      0.2040987
+            Contribution:   0  12      0.7670325   7.873688e-07   8.138147e-08
+            Contribution:   0  11      0.7670325   0.0008514406   7.839493e-07
+            Contribution:   0  10      0.7670325      0.1929947   6.551432e-06
+            Contribution:   0   9      0.7670325       9.169617   4.731814e-05
+            Contribution:   0   8      0.7670325       91.32127   0.0002935216
+            Contribution:   0   7      0.7670325       190.6371    0.001549442
+            Contribution:   0   6      0.7670325       83.41766    0.006870641
+            Contribution:   0   5      0.7670325       7.651091      0.0251304
+            Contribution:   0   4      0.7670325      0.1470969      0.0738702
+            Contribution:   0   3      0.7670325    0.000592787      0.1678401
+        <\chi_n|\chi_m> @ T =                      600             2.23436445333
+
+        Temperature :  300 K ; Maximum initial state oscillator quantum number    4
+                          n   m   occupation     deltacoef      overlap
+            Contribution:   4  16   8.205924e-06   4.702592e-06   5.579017e-05
+            Contribution:   4  15   8.205924e-06     0.00351873   0.0003557114
+            Contribution:   4  14   8.205924e-06      0.5518861    0.001877386
+            Contribution:   4  13   8.205924e-06       18.14378    0.008062134
+            Contribution:   4  12   8.205924e-06        125.032     0.02743566
+            Contribution:   4  11   8.205924e-06       180.6047     0.07095455
+            Contribution:   4  10   8.205924e-06       54.68297      0.1297649
+            Contribution:   4   9   8.205924e-06       3.470483      0.1449671
+            Contribution:   4   8   8.205924e-06     0.04616817     0.06448231
+            Contribution:   4   7   8.205924e-06    0.000128739   0.0004787088
+            Contribution:   3  15   0.0001511948   3.032712e-06   1.788345e-05
+            Contribution:   3  14   0.0001511948    0.002488064   0.0001256725
+            Contribution:   3  13   0.0001511948      0.4278652   0.0007393786
+            Contribution:   3  12   0.0001511948       15.42294    0.003592725
+            Contribution:   3  11   0.0001511948       116.5312     0.01412323
+            Contribution:   3  10   0.0001511948       184.5578      0.0435121
+            Contribution:   3   9   0.0001511948       61.26849     0.09978674
+            Contribution:   3   8   0.0001511948       4.263408      0.1551163
+            Contribution:   3   7   0.0001511948     0.06218583      0.1321446
+            Contribution:   3   6   0.0001511948   0.0001901257     0.02639549
+            Contribution:   2  14    0.002785778   1.945222e-06   4.572007e-06
+            Contribution:   2  13    0.002785778    0.001749772   3.553248e-05
+            Contribution:   2  12    0.002785778      0.3299201   0.0002338566
+            Contribution:   2  11    0.002785778        13.0392    0.001290117
+            Contribution:   2  10    0.002785778       108.0209    0.005873525
+            Contribution:   2   9    0.002785778       187.5771     0.02155806
+            Contribution:   2   8    0.002785778       68.27575     0.06152707
+            Contribution:   2   7    0.002785778       5.209165      0.1285717
+            Contribution:   2   6    0.002785778     0.08330758      0.1753429
+            Contribution:   2   5    0.002785778   0.0002792646      0.1165914
+            Contribution:   1  13     0.05132819   1.240942e-06   8.324449e-07
+            Contribution:   1  12     0.05132819      0.0012239   7.184618e-06
+            Contribution:   1  11     0.05132819        0.25302   5.313344e-05
+            Contribution:   1  10     0.05132819       10.96425   0.0003343484
+            Contribution:   1   9     0.05132819       99.59047    0.001770841
+            Contribution:   1   8     0.05132819       189.6145     0.00776855
+            Contribution:   1   7     0.05132819       75.67285     0.02756448
+            Contribution:   1   6     0.05132819       6.330289     0.07625542
+            Contribution:   1   5     0.05132819      0.1109997      0.1546737
+            Contribution:   1   4     0.05132819   0.0004079765      0.2040987
+            Contribution:   0  12      0.9457262   7.873688e-07   8.138147e-08
+            Contribution:   0  11      0.9457262   0.0008514406   7.839493e-07
+            Contribution:   0  10      0.9457262      0.1929947   6.551432e-06
+            Contribution:   0   9      0.9457262       9.169617   4.731814e-05
+            Contribution:   0   8      0.9457262       91.32127   0.0002935216
+            Contribution:   0   7      0.9457262       190.6371    0.001549442
+            Contribution:   0   6      0.9457262       83.41766    0.006870641
+            Contribution:   0   5      0.9457262       7.651091      0.0251304
+            Contribution:   0   4      0.9457262      0.1470969      0.0738702
+            Contribution:   0   3      0.9457262    0.000592787      0.1678401
+        <\chi_n|\chi_m> @ T =                      300           1.2863066690662
+
+        Temperature :  100 K ; Maximum initial state oscillator quantum number    1
+                          n   m   occupation     deltacoef      overlap
+            Contribution:   1  13   0.0001598461   1.240942e-06   8.324449e-07
+            Contribution:   1  12   0.0001598461      0.0012239   7.184618e-06
+            Contribution:   1  11   0.0001598461        0.25302   5.313344e-05
+            Contribution:   1  10   0.0001598461       10.96425   0.0003343484
+            Contribution:   1   9   0.0001598461       99.59047    0.001770841
+            Contribution:   1   8   0.0001598461       189.6145     0.00776855
+            Contribution:   1   7   0.0001598461       75.67285     0.02756448
+            Contribution:   1   6   0.0001598461       6.330289     0.07625542
+            Contribution:   1   5   0.0001598461      0.1109997      0.1546737
+            Contribution:   1   4   0.0001598461   0.0004079765      0.2040987
+            Contribution:   0  12      0.9998401   7.873688e-07   8.138147e-08
+            Contribution:   0  11      0.9998401   0.0008514406   7.839493e-07
+            Contribution:   0  10      0.9998401      0.1929947   6.551432e-06
+            Contribution:   0   9      0.9998401       9.169617   4.731814e-05
+            Contribution:   0   8      0.9998401       91.32127   0.0002935216
+            Contribution:   0   7      0.9998401       190.6371    0.001549442
+            Contribution:   0   6      0.9998401       83.41766    0.006870641
+            Contribution:   0   5      0.9998401       7.651091      0.0251304
+            Contribution:   0   4      0.9998401      0.1470969      0.0738702
+            Contribution:   0   3      0.9998401    0.000592787      0.1678401
+        <\chi_n|\chi_m> @ T =                      100           1.0994963571509
+
+        Temperature :   50 K ; Maximum initial state oscillator quantum number    0
+                          n   m   occupation     deltacoef      overlap
+            Contribution:   0  12              1   7.873688e-07   8.138147e-08
+            Contribution:   0  11              1   0.0008514406   7.839493e-07
+            Contribution:   0  10              1      0.1929947   6.551432e-06
+            Contribution:   0   9              1       9.169617   4.731814e-05
+            Contribution:   0   8              1       91.32127   0.0002935216
+            Contribution:   0   7              1       190.6371    0.001549442
+            Contribution:   0   6              1       83.41766    0.006870641
+            Contribution:   0   5              1       7.651091      0.0251304
+            Contribution:   0   4              1      0.1470969      0.0738702
+            Contribution:   0   3              1    0.000592787      0.1678401
+        <\chi_n|\chi_m> @ T =                       50           1.0989944519659
+
+        Temperature :   10 K ; Maximum initial state oscillator quantum number    0
+                          n   m   occupation     deltacoef      overlap
+            Contribution:   0  12              1   7.873688e-07   8.138147e-08
+            Contribution:   0  11              1   0.0008514406   7.839493e-07
+            Contribution:   0  10              1      0.1929947   6.551432e-06
+            Contribution:   0   9              1       9.169617   4.731814e-05
+            Contribution:   0   8              1       91.32127   0.0002935216
+            Contribution:   0   7              1       190.6371    0.001549442
+            Contribution:   0   6              1       83.41766    0.006870641
+            Contribution:   0   5              1       7.651091      0.0251304
+            Contribution:   0   4              1      0.1470969      0.0738702
+            Contribution:   0   3              1    0.000592787      0.1678401
+        <\chi_n|\chi_m> @ T =                       10            1.098994480055
+
+    Calculating HR phonon part at T=0
+        atomic unit dQ :          37.390806423448
+                          n   m   deltacoef      overlap
+            Contribution:   0  12   7.873688e-07   4.655589e-07
+            Contribution:   0  11   0.0008514406   3.057232e-06
+            Contribution:   0  10      0.1929947   1.840321e-05
+            Contribution:   0   9       9.169617   0.0001007085
+            Contribution:   0   8       91.32127   0.0004959992
+            Contribution:   0   7       190.6371    0.002171418
+            Contribution:   0   6       83.41766    0.008317906
+            Contribution:   0   5       7.651091     0.02731101
+            Contribution:   0   4      0.1470969     0.07472746
+            Contribution:   0   3    0.000592787      0.1635734
+        <\chi_n|\chi_m> @ T = 0 ~=           1.3740836492406
+
+    Calculating lifetime
+        T(K)   lifetime(s)
+         600  1.844233355554e-08
+         300  3.203504694792e-08
+         100  3.747797276904e-08
+          50  3.749508876888e-08
+          10  3.749508781054e-08
+        Saving lifetime_T to lifetime_T.txt
+
+Done! :)
+
+Ending nonradiative code on 06/01/2021 at 13:44:20
+
