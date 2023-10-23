@@ -399,9 +399,12 @@ def calc_wif(dir_i, dir_f, ix_defect, ix_bandmin, ix_bandmax, dQ, de=None, spinn
 
         # only use a few begginning where ratio=0
         ar_overlap = ar0[index0:, 1]
+#        ar_overlap = ar0[:, 1] # KL modified
         nq = 3
+#        nq = 12 # KL modified
 #       print("Fitting %i points: Q=[%.3f, %.3f]" % (nq, ar_Q[0], ar_Q[nq-1]))
         p = np.polyfit(ar_Q[:nq], ar_overlap[:nq],  deg=1)
+#        p = np.polyfit(ar_Q[index0:index0+5], ar_overlap[index0:index0+5],  deg=1) # KL modified
 #       print("Band %i dS/dQ %.2e Wif %.2e" % (iband, p[0], p[0] * dE))
         list_wif.append((iband, float(p[0] * dE)))
 
@@ -606,6 +609,18 @@ def calc_lifetime_T(g, wif, list_phonon_part, job):
         # convert GHz to Ha (note this multiplying hbar^2 in given units)
         wif *= GHz2Ha
         prefactor = 4 * pi * g * wif ** 2
+        #### kli's comment ####
+        # The prefactor 4*pi is originated from the 3E->1A1 ISC transition using Fermi's golden rule,
+        # Gamma = 2pi/hbar * <|H_soc|>^2 * \delta(energy diff), and <|H_soc|>=sqrt(2) * hbar * lambda_\perp.
+        # The matrix element can be further traced back to eq. (2) in https://journals.aps.org/prb/pdf/10.1103/PhysRevB.96.081115
+        # and i\sqrt(2)\lambda_\perp in Table 2 of https://iopscience.iop.org/article/10.1088/1367-2630/13/2/025019/pdf
+        # by considering the reduced SOC matrix element <e||H_soc||a1>.
+        # However, this is a special case for 3E->1A1 of NV center. Since we calculate the SOC matrix element
+        # using multi-particle wavefunction, which already contains a factor of constant if there is any, we should not take any
+        # more factor into the equation. 
+        # To make the equation general, the prefactor above needs to be devided by a factor of 2.
+        #### kli's comment ####
+        prefactor /= 2
 
     list_lifetime = []
     for temperature, osc in list_phonon_part:
