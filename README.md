@@ -12,6 +12,7 @@ This code calculates the non-raditive recombination capture coefficient and life
 [L. Shi, K. Xu, and L.-W. Wang, *Physical Review B* **91**, 205315 (2015).](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.91.205315 "Comparative study of ab initio nonradiative recombination rate calculations under different formalisms")
 
 For citation of this code, please cite:
+
 [F. Wu, T. J. Smart, J. Xu, and Y. Ping, *Physical Review B (Rapid Communication)* **100**, 081407 (2019).](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.100.081407 "Carrier recombination mechanism at defects in wide band gap two-dimensional materials from first principles")
 
 Prerequisites:
